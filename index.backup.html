@@ -1,0 +1,1556 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>식물 성장 교실 — 식물의 구조와 기능</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;500;700;900&display=swap');
+  :root{
+    --bg1:#2a1710; --bg2:#3c2417; --cream:#faefd4; --cream2:#f4e4bf;
+    --ink:#5b4634; --ink-soft:#977a5b; --line:#e7d4ab; --star:#f6ab30; --white:#fff;
+    --root:#e0894a; --root2:#cf763a; --stem:#76bb4d; --stem2:#62a73d;
+    --leaf:#2faa70; --leaf2:#22945e; --trans:#4f9fd1; --trans2:#3d8cc0;
+    --flower:#e07ba0; --flower2:#d0688f; --whole:#f0b537; --whole2:#e0a522;
+  }
+  *{box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent;}
+  html,body{height:100%; overflow:hidden; font-family:'Noto Sans KR',sans-serif; font-weight:500;
+    word-break:keep-all; overflow-wrap:break-word; line-height:1.35;
+    background:radial-gradient(circle at 50% 38%,var(--bg2),var(--bg1) 78%); user-select:none; touch-action:manipulation;}
+  #fit{position:fixed; inset:0; display:flex; align-items:center; justify-content:center;}
+  #stage{width:1280px; height:720px; position:relative; transform-origin:center center;
+    background:radial-gradient(circle at 50% 30%,var(--bg2),var(--bg1) 80%);}
+  .deco{position:absolute; font-size:63px; opacity:.5; pointer-events:none;}
+  .board{position:absolute; inset:26px; background:linear-gradient(170deg,var(--cream),var(--cream2));
+    border-radius:34px; box-shadow:0 18px 0 rgba(0,0,0,.18), inset 0 2px 0 rgba(255,255,255,.6); overflow:hidden;}
+  .page{position:absolute; inset:0; padding:22px 34px 18px; display:flex; flex-direction:column;}
+
+  .topbar{display:flex; align-items:center; gap:12px; height:80px; flex:0 0 auto;}
+  .mascot{width:64px; height:64px; border-radius:50%; background:linear-gradient(160deg,#f0a85e,#d77a35);
+    display:flex; align-items:center; justify-content:center; font-size:56px; box-shadow:0 4px 0 rgba(0,0,0,.12); flex:0 0 auto;}
+  .hello{font-family:'Jua'; color:var(--ink); line-height:1.05;}
+  .hello .t{font-size:39px;} .hello .s{font-size:24px; color:var(--ink-soft); margin-top:3px; font-family:'Noto Sans KR'; font-weight:700;}
+  .stats{margin-left:auto; display:flex; gap:8px;}
+  .chip{background:var(--white); border-radius:15px; padding:6px 11px; font-family:'Jua'; font-size:26px;
+    color:var(--ink); box-shadow:0 3px 0 rgba(0,0,0,.08); border:2px solid #fff; white-space:nowrap;}
+  .chip.s{border-color:#ffe2a8;} .chip.a{border-color:#bdebcf;} .chip.m{border-color:#ffd1d8;}
+  .homebtn{background:var(--white); border:none; border-radius:15px; padding:8px 13px; font-family:'Jua';
+    font-size:26px; color:var(--ink); cursor:pointer; box-shadow:0 3px 0 rgba(0,0,0,.1);}
+  .homebtn:active{transform:translateY(2px);}
+
+  .home-title{text-align:center; margin:2px 0 0;}
+  .home-title h1{font-family:'Jua'; font-size:40px; color:var(--ink);}
+  .home-title p{font-size:23px; color:var(--ink-soft); font-weight:700;}
+  .grid{flex:1; min-height:0; display:grid; grid-template-columns:repeat(4,1fr); grid-template-rows:repeat(2,1fr); gap:12px; padding:8px 2px 2px;}
+  .card{border-radius:18px; padding:8px; color:#fff; position:relative; cursor:pointer;
+    box-shadow:0 7px 0 rgba(0,0,0,.16), inset 0 2px 0 rgba(255,255,255,.25);
+    display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;
+    transition:transform .12s; overflow:hidden;}
+  .card:active{transform:translateY(3px);}
+  .card .no{position:absolute; top:7px; left:9px; width:26px; height:26px; border-radius:50%; background:#fff;
+    color:var(--ink); font-family:'Jua'; font-size:17px; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 0 rgba(0,0,0,.12);}
+  .card .lock{position:absolute; inset:0; background:rgba(60,40,25,.55); display:flex; align-items:center; justify-content:center; font-size:40px; border-radius:18px;}
+  .card .cicon{font-size:46px; line-height:1; filter:drop-shadow(0 4px 3px rgba(0,0,0,.18));}
+  .card .ctitle{font-family:'Jua'; font-size:24px; margin-top:4px;}
+  .card .cdesc{font-size:16px; font-weight:700; opacity:.95; margin-top:2px;}
+  .card .stars{margin-top:4px; font-size:21px; letter-spacing:2px;}
+  .card .cprog{margin-top:5px; font-family:'Jua'; font-size:20px; color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.18);}
+  .card .stars .on{color:#fff7d9;} .card .stars .off{opacity:.45;}
+  .home-foot{text-align:center; font-weight:700; font-size:19px; color:var(--ink-soft); padding-top:2px;}
+
+  .phead{display:flex; align-items:center; gap:10px; flex:0 0 auto; margin-bottom:4px;}
+  .pbadge{font-family:'Jua'; color:#fff; padding:4px 12px; border-radius:12px; font-size:26px; box-shadow:0 3px 0 rgba(0,0,0,.12);}
+  .ptitle{font-family:'Jua'; font-size:43px; color:var(--ink);}
+  .pbody{flex:1; display:flex; flex-direction:column; min-height:0; overflow:hidden;}
+  .ask{font-family:'Jua'; color:var(--ink); line-height:1.35;}
+  .lead{font-size:31px; font-weight:700; color:var(--ink); line-height:1.45;}
+
+  .navrow{flex:0 0 auto; display:flex; align-items:center; justify-content:space-between; padding-top:6px;}
+  .dots{display:flex; gap:6px;}
+  .dot{width:9px; height:9px; border-radius:50%; background:#e2cfa6;}
+  .dot.on{background:var(--ink); transform:scale(1.2);}
+  .navbtn{border:none; border-radius:15px; padding:9px 18px; font-family:'Jua'; font-size:30px; cursor:pointer;
+    color:#fff; box-shadow:0 4px 0 rgba(0,0,0,.16); display:inline-flex; align-items:center; gap:6px;}
+  .navbtn:active{transform:translateY(3px); box-shadow:0 1px 0 rgba(0,0,0,.16);}
+  .navbtn.ghost{background:#efe0bd; color:var(--ink); box-shadow:0 4px 0 rgba(0,0,0,.1);}
+  .navbtn.sm{padding:8px 14px; font-size:28px;}
+  .navbtn:disabled{opacity:.35; pointer-events:none;}
+
+  .panel{background:#fff; border-radius:18px; box-shadow:0 4px 0 rgba(0,0,0,.07); border:2px solid #f1e3c2;}
+  .softpill{background:#fff; border:2px solid #efe0bd; border-radius:13px; padding:6px 10px; font-weight:700; color:var(--ink); font-size:22px;}
+
+  .opt{background:#fff; border:3px solid #efe0bd; border-radius:16px; padding:12px 14px; font-family:'Noto Sans KR';
+    font-weight:700; font-size:33px; color:var(--ink); cursor:pointer; text-align:left; transition:transform .1s; box-shadow:0 3px 0 rgba(0,0,0,.06);}
+  .opt:active{transform:translateY(2px);}
+  .opt.correct{background:#d8f3e1; border-color:#5cc98a; color:#1f7a4d;}
+  .opt.wrong{background:#fbe0e0; border-color:#e58b8b; color:#b33; animation:shake .35s;}
+  .opt.disabled{pointer-events:none;}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  .fbk{font-family:'Jua'; font-size:33px; margin-top:6px; min-height:24px;}
+  .fbk.good{color:#1f9d57;} .fbk.bad{color:#d3603a;}
+  .tag{display:inline-block; background:#fff4dc; color:var(--ink); border:2px solid #f0dcab; border-radius:12px;
+    padding:4px 10px; font-weight:700; font-size:28px; margin:2px;}
+  .bigemoji{font-size:170px; filter:drop-shadow(0 6px 4px rgba(0,0,0,.15));}
+  .pulse{animation:pulse 1.6s infinite;} @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+
+  /* sim layout */
+  .simwrap{flex:1; display:flex; gap:16px; min-height:0;}
+  .simcanvas{background:#fff; border-radius:18px; border:2px solid #f1e3c2; box-shadow:0 4px 0 rgba(0,0,0,.07); overflow:hidden; flex:0 0 auto; cursor:pointer;}
+  .simside{flex:1; display:flex; flex-direction:column; gap:6px; min-width:0;}
+  .controls{display:flex; flex-wrap:wrap; gap:7px;}
+  .toggle{border:3px solid #efe0bd; background:#fff; border-radius:14px; padding:7px 11px; font-family:'Jua'; font-size:22px; color:var(--ink); cursor:pointer; box-shadow:0 3px 0 rgba(0,0,0,.06);}
+  .toggle.on{background:#fff3cc; border-color:var(--whole);}
+  .toggle:active{transform:translateY(2px);}
+  .meter{display:flex; gap:8px; flex-wrap:wrap;}
+  .meter .m{background:#f7fbf3; border:2px solid #d7ebc6; border-radius:12px; padding:5px 9px; font-weight:700; font-size:20px; color:var(--ink);}
+  .meter .m b{font-family:'Jua'; color:var(--stem2); font-size:24px;}
+  .check{display:flex; flex-direction:column; gap:7px;}
+  .ck{display:flex; align-items:center; gap:7px; font-weight:700; color:var(--ink-soft); font-size:23px;}
+  .ck.on{color:var(--ink);}
+  .ck .box{width:20px; text-align:center; font-size:23px;}
+  .hintline{font-size:20px; font-weight:700; color:var(--ink-soft);}
+  input[type=range]{accent-color:var(--root); height:24px;}
+
+  .slotxt{pointer-events:none;}
+  .slot{cursor:pointer;}
+  .slot.done{filter:drop-shadow(0 0 3px rgba(0,0,0,.15));}
+
+  /* MODAL */
+  #modalRoot{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; z-index:60; pointer-events:none;}
+  .mback{position:absolute; inset:0; background:rgba(45,28,16,.5); opacity:0; transition:.25s;}
+  .mbox{position:relative; width:560px; max-width:80%; background:linear-gradient(170deg,#fffaf0,#f6e9cd);
+    border-radius:26px; padding:22px 26px 20px; border:3px solid #fff; box-shadow:0 16px 0 rgba(0,0,0,.2);
+    transform:scale(.82) translateY(14px); opacity:0; transition:transform .28s cubic-bezier(.2,1.4,.4,1), opacity .25s; text-align:center;}
+  #modalRoot.show{pointer-events:auto;} #modalRoot.show .mback{opacity:1;} #modalRoot.show .mbox{transform:scale(1); opacity:1;}
+  .mbox .mart{font-size:115px; line-height:1; animation:floaty 2s ease-in-out infinite;}
+  @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+  .mbox .mstep{display:flex; gap:6px; justify-content:center; margin:6px 0 2px;}
+  .mbox .mstep i{width:8px; height:8px; border-radius:50%; background:#e2cfa6; display:inline-block;}
+  .mbox .mstep i.on{background:var(--root);}
+  .mbox h3{font-family:'Jua'; font-size:44px; color:var(--ink); margin-top:4px;}
+  .mbox p{font-size:31px; font-weight:700; color:var(--ink); line-height:1.5; margin-top:8px;}
+  .mbox p b{color:var(--root2);}
+  .mbtns{display:flex; gap:10px; justify-content:center; margin-top:16px;}
+</style>
+</head>
+<body>
+<div id="fit"><div id="stage">
+  <div class="deco" style="top:6px;left:60px;transform:rotate(-20deg)">🍂</div>
+  <div class="deco" style="bottom:14px;right:54px;transform:rotate(25deg)">🍁</div>
+  <div class="deco" style="bottom:60px;left:34px;transform:rotate(10deg);font-size:48px">🍃</div>
+  <div class="deco" style="top:54px;right:40px;transform:rotate(-12deg);font-size:48px">🌱</div>
+  <div class="board" id="board"></div>
+  <div id="modalRoot"></div>
+</div></div>
+
+<script>
+/* =========================================================================
+   식물 성장 교실 — 식물의 구조와 기능 (초6) · 동적 시뮬레이션 버전
+   ========================================================================= */
+const COLORS={cell:{c:'#46b3a3',d:'#359384'},root:{c:'#e0894a',d:'#cf763a'},stem:{c:'#76bb4d',d:'#62a73d'},leaf:{c:'#2faa70',d:'#22945e'},
+  trans:{c:'#4f9fd1',d:'#3d8cc0'},flower:{c:'#e07ba0',d:'#d0688f'},whole:{c:'#f0b537',d:'#e0a522'}};
+const state={view:'home',ti:0,pi:0,stars:{cell:0,root:0,stem:0,leaf:0,trans:0,flower:0,whole:0},done:{},correct:0,seen:{}};
+const board=document.getElementById('board');
+const modalRoot=document.getElementById('modalRoot');
+
+/* ---- scale to fit (landscape, no scroll) ---- */
+function fit(){const s=Math.min(window.innerWidth/1280,window.innerHeight/720);
+  document.getElementById('stage').style.transform=`scale(${s})`;}
+window.addEventListener('resize',fit); fit();
+
+/* ---- lifecycle cleanup (animation loops) ---- */
+let cleanups=[];
+function registerCleanup(fn){cleanups.push(fn);}
+function runCleanups(){cleanups.forEach(f=>{try{f()}catch(e){}}); cleanups=[]; if(typeof clearModals==='function')clearModals();}
+function loop(fn){let raf,run=true; const step=t=>{if(!run)return; fn(t); raf=requestAnimationFrame(step);};
+  raf=requestAnimationFrame(step); registerCleanup(()=>{run=false; cancelAnimationFrame(raf);});}
+function delay(fn,ms){const id=setTimeout(fn,ms); registerCleanup(()=>clearTimeout(id)); return id;}
+
+/* ---- 자연스러운 뿌리 생성/그리기 (형태는 한 번 생성해 고정) ---- */
+function srand(seed){let s=seed>>>0||1; return ()=>{s=(s*1664525+1013904223)>>>0; return s/4294967296;};}
+function genRoot(bx,by,len,spread,seed){
+  const R=srand(seed), segs=12, main=[]; let x=bx,y=by;
+  for(let i=0;i<=segs;i++){ main.push({x,y,w:Math.max(1.4,5.6*(1-i/segs)+1)});
+    y+=len/segs; x+=(R()-0.5)*spread*0.16; }
+  const laterals=[];
+  for(let k=0;k<5;k++){ const idx=2+Math.floor(R()*(segs-3)), st=main[idx];
+    const dir=(k%2?1:-1)*(0.7+R()*0.6), llen=len*(0.55-idx/segs*0.32)*(0.7+R()*0.5), ls=6, pts=[];
+    let lx=st.x,ly=st.y;
+    for(let j=0;j<=ls;j++){ pts.push({x:lx,y:ly,w:Math.max(0.9,2.7*(1-j/ls))});
+      lx+=dir*spread*0.17*(1-j/ls*0.3)+(R()-0.5)*3; ly+=llen/ls*(0.75+0.25*(1-j/ls)); }
+    laterals.push(pts); }
+  const hairs=[];
+  const addH=poly=>{ for(let i=1;i<poly.length;i++){ const p=poly[i], n=1+(R()<0.55?1:0);
+    for(let h=0;h<n;h++){ const a=Math.PI*0.5+(R()-0.5)*2.3, L=6+R()*9, sgn=R()<0.5?-1:1;
+      const ex=p.x+Math.cos(a)*L*sgn, ey=p.y+Math.abs(Math.sin(a))*L*0.5+L*0.4;
+      hairs.push({x:p.x,y:p.y,ex,ey,cx:p.x+(ex-p.x)*0.4+(R()-0.5)*5,cy:p.y+(ey-p.y)*0.5}); } } };
+  addH(main); laterals.forEach(addH);
+  for(let i=hairs.length-1;i>0;i--){const j=Math.floor(R()*(i+1)); const tmp=hairs[i]; hairs[i]=hairs[j]; hairs[j]=tmp;}
+  return {main,laterals,hairs};
+}
+function drawRoot(ctx,root,col,hcol,nActive){
+  ctx.lineCap='round'; ctx.strokeStyle=col;
+  const sp=poly=>{for(let i=1;i<poly.length;i++){ctx.lineWidth=poly[i].w; ctx.beginPath();
+    ctx.moveTo(poly[i-1].x,poly[i-1].y); ctx.lineTo(poly[i].x,poly[i].y); ctx.stroke();}};
+  sp(root.main); root.laterals.forEach(sp);
+  ctx.strokeStyle=hcol; ctx.lineWidth=1.3;
+  const n=nActive==null?root.hairs.length:Math.min(nActive,root.hairs.length);
+  for(let i=0;i<n;i++){const h=root.hairs[i]; ctx.beginPath(); ctx.moveTo(h.x,h.y);
+    ctx.quadraticCurveTo(h.cx,h.cy,h.ex,h.ey); ctx.stroke();}
+  ctx.lineCap='butt';
+}
+
+/* ---- 새싹(활동) → 별(마을) → 황금 새싹(전체 완료) 단계 ---- */
+function gatedKeys(ti){const t=TOPICS[ti],k=[];t.pages.forEach((p,i)=>{if(p.gate)k.push(t.id+'-'+i);});return k;}
+function gatedAllKeys(){let k=[]; TOPICS.forEach((t,i)=>{k=k.concat(gatedKeys(i));}); return k;}
+function topicDone(ti){const k=gatedKeys(ti); return k.length?k.filter(x=>state.done[x]).length:0;}
+function topicTotal(ti){return gatedKeys(ti).length;}
+function topicComplete(ti){return topicTotal(ti)>0 && topicDone(ti)===topicTotal(ti);}
+function sproutsDone(){return gatedAllKeys().filter(k=>state.done[k]).length;}   // 모은 새싹
+function sproutsTotal(){return gatedAllKeys().length;}
+function starsDone(){return TOPICS.reduce((a,_,i)=>a+(topicComplete(i)?1:0),0);}   // 완료한 마을 = 별
+function starsTotal(){return TOPICS.length;}                                       // 7
+function allComplete(){return starsDone()===starsTotal();}                          // 전체 완료 → 황금 새싹
+function totalStars(){return starsDone();}
+/* 황금 새싹 SVG (최종 보상 모양) */
+function goldSprout(px){return `<svg viewBox="0 0 40 50" width="${px}" height="${Math.round(px*1.25)}" style="vertical-align:middle;display:inline-block">`+
+  `<path d="M20 48 L20 22" stroke="#d9a51a" stroke-width="3.6" fill="none" stroke-linecap="round"/>`+
+  `<path d="M20 24 C7 25 3 12 6 4 C17 6 23 13 20 24 Z" fill="#f3c218" stroke="#b9881a" stroke-width="1"/>`+
+  `<path d="M20 24 C33 25 37 12 34 4 C23 6 17 13 20 24 Z" fill="#f3c218" stroke="#b9881a" stroke-width="1"/>`+
+  `<path d="M11 9 C13 13 16 18 19 22" stroke="#fff0a8" stroke-width="1.4" fill="none" opacity=".85"/>`+
+  `<path d="M29 9 C27 13 24 18 21 22" stroke="#fff0a8" stroke-width="1.4" fill="none" opacity=".85"/></svg>`;}
+const GOLD=goldSprout(22);
+function goldSproutPotted(px){const w=px, h=Math.round(px*1.3);
+ return `<svg viewBox="0 0 80 104" width="${w}" height="${h}" style="display:inline-block">`+
+  `<path d="M16 100 L64 100 L58 74 L22 74 Z" fill="#b07a3e" stroke="#8a5a2b" stroke-width="2"/>`+
+  `<g stroke="#8a5a2b" stroke-width="1" opacity=".5"><line x1="24" y1="82" x2="34" y2="82"/><line x1="42" y1="88" x2="54" y2="88"/><line x1="28" y1="94" x2="40" y2="94"/></g>`+
+  `<ellipse cx="40" cy="74" rx="23" ry="9" fill="#4fae6d"/>`+
+  `<g stroke="#3f9a5c" stroke-width="2" stroke-linecap="round"><line x1="26" y1="74" x2="24" y2="65"/><line x1="33" y1="73" x2="32" y2="62"/><line x1="47" y1="73" x2="48" y2="62"/><line x1="54" y1="74" x2="56" y2="65"/></g>`+
+  `<path d="M40 74 L40 36" stroke="#d9a51a" stroke-width="4" fill="none" stroke-linecap="round"/>`+
+  `<path d="M40 38 C25 39 20 22 24 12 C38 14 45 24 40 38 Z" fill="#f3c218" stroke="#b9881a" stroke-width="1"/>`+
+  `<path d="M40 38 C55 39 60 22 56 12 C42 14 35 24 40 38 Z" fill="#f3c218" stroke="#b9881a" stroke-width="1"/>`+
+  `<path d="M30 18 C32 24 36 30 39 36" stroke="#fff0a8" stroke-width="1.6" fill="none" opacity=".85"/>`+
+  `<path d="M50 18 C48 24 44 30 41 36" stroke="#fff0a8" stroke-width="1.6" fill="none" opacity=".85"/></svg>`;}
+function recomputeStars(ti){const t=TOPICS[ti],keys=gatedKeys(ti); if(!keys.length)return;
+  const n=keys.filter(k=>state.done[k]).length, s=n>0?Math.max(1,Math.round(n/keys.length*3)):0;
+  if(Math.min(3,s)>state.stars[t.id]) state.stars[t.id]=Math.min(3,s);}
+
+/* =========================================================================
+   동적 모달 (단계 스캐폴딩)
+   ========================================================================= */
+let modalQueue=[], modalActive=false;
+function openModal(steps, opts={}){ modalQueue.push({steps,opts}); if(!modalActive) showNextModal(); }
+function clearModals(){ modalQueue=[]; modalActive=false; modalRoot.classList.remove('show'); modalRoot.innerHTML=''; }
+function showNextModal(){
+  if(!modalQueue.length){ modalActive=false; return; }
+  modalActive=true;
+  const {steps,opts}=modalQueue.shift();
+  let idx=0; const color=opts.color||COLORS.root.c;
+  function render(){
+    const s=steps[idx], multi=steps.length>1;
+    const dots=multi?`<div class="mstep">${steps.map((_,i)=>`<i class="${i<=idx?'on':''}" style="${i<=idx?'background:'+color:''}"></i>`).join('')}</div>`:'';
+    const last=idx===steps.length-1;
+    modalRoot.innerHTML=`<div class="mback"></div>
+      <div class="mbox" style="border-color:#fff">
+        <div class="mart">${s.art||'🌱'}</div>${dots}
+        <h3>${s.title||''}</h3><p>${s.body||''}</p>
+        <div class="mbtns">
+          ${idx>0?`<button class="navbtn ghost sm" id="mPrev">← 이전</button>`:''}
+          <button class="navbtn sm" id="mNext" style="background:${color}">${last?'알겠어요 ✅':'다음 →'}</button>
+        </div>
+      </div>`;
+    modalRoot.querySelector('.mbox').querySelectorAll('p b').forEach(b=>b.style.color=color);
+    requestAnimationFrame(()=>modalRoot.classList.add('show'));
+    const nx=modalRoot.querySelector('#mNext'); nx.onclick=()=>{ if(last) close(); else {idx++; render();} };
+    const pv=modalRoot.querySelector('#mPrev'); if(pv) pv.onclick=()=>{idx--; render();};
+    // 배경 클릭으로는 닫히지 않음 (버튼으로만 진행)
+  }
+  function close(){ modalRoot.classList.remove('show');
+    setTimeout(()=>{ modalRoot.innerHTML=''; opts.onDone&&opts.onDone(); showNextModal(); },260); }
+  render();
+}
+/* 단발 안내 모달(마일스톤) */
+function popModal(art,title,body,color){ openModal([{art,title,body}],{color}); }
+
+/* =========================================================================
+   HOME (마을 지도)
+   ========================================================================= */
+function renderHome(){
+  runCleanups(); state.view='home';
+  const unlocked=i=> i===0 || state.stars[TOPICS[i-1].id]>0;
+  const cards=TOPICS.map((t,i)=>{
+    const dn=topicDone(i), tt=topicTotal(i), comp=topicComplete(i);
+    const prog = tt? `<div class="cprog">${comp?'⭐ 완료!':'🌱 '+dn+'/'+tt}</div>` : '';
+    return `<div class="card" style="background:linear-gradient(160deg,${t.col.c},${t.col.d})" ${unlocked(i)?`onclick="openTopic(${i})"`:''}>
+      <div class="no">${i+1}</div><div class="cicon">${t.icon}</div>
+      <div class="ctitle">${t.title}</div><div class="cdesc">${t.desc}</div>
+      ${prog}${unlocked(i)?'':'<div class="lock">🔒</div>'}</div>`;}).join('');
+  board.innerHTML=`<div class="page">
+    <div class="topbar"><div class="mascot">🌱</div>
+      <div class="hello"><div class="t">안녕, <b>꼬마 식물학자</b>!</div>
+        <div class="s">7개 마을을 직접 키우고 관찰하며 식물의 비밀을 알아보자</div></div>
+      <div class="stats"><div class="chip a">🌱 새싹 ${sproutsDone()}/${sproutsTotal()}</div>
+        <div class="chip s">⭐ 별 ${starsDone()}/${starsTotal()}</div>
+        <div class="chip m" style="cursor:pointer" onclick="showLadderGuide()">📋 단계 가이드</div></div></div>
+    <div class="home-title"><h1>🌱 식물 성장 교실 🌱</h1><p>직접 키우고 관찰하며 식물의 구조와 기능을 알아봐요</p></div>
+    <div class="grid">${cards}</div>
+    <div class="home-foot">💡 <b>활동</b>을 마치면 🌱 새싹, 한 <b>마을</b>을 모두 마치면 ⭐ 별, <b>모든 마을</b>을 마치면 ${GOLD} <b>황금 새싹</b>을 받아요!</div></div>`;
+}
+window.showLadderGuide=()=>openModal([
+  {art:'🌱',title:'1단계 · 새싹 모으기',body:'마을의 <b>활동을 하나 마칠 때마다</b> 🌱 <b>새싹</b>을 하나씩 얻어요. 새싹을 모으며 한 단계씩 나아가요.'},
+  {art:'⭐',title:'2단계 · 별 얻기',body:'한 <b>마을의 활동을 모두 마치면</b> 그 마을의 ⭐ <b>별</b>을 얻어요. 마을은 모두 7개예요.'},
+  {art:'🏆',title:'3단계 · 황금 새싹',body:`<b>7개 마을을 모두 마치면</b> 모은 새싹이 자라 ${goldSprout(20)} <b>황금 새싹</b>이 돼요. 학습을 끝내면 받는 최고의 상이에요!`}
+],{color:COLORS.whole.c});
+window.openTopic=i=>{state.ti=i; state.pi=0; renderTopic();};
+
+/* =========================================================================
+   TOPIC SHELL
+   ========================================================================= */
+function renderTopic(){
+  runCleanups(); state.view='topic';
+  const t=TOPICS[state.ti], pages=t.pages, p=pages[state.pi], col=t.col;
+  const dots=pages.map((_,i)=>`<div class="dot ${i===state.pi?'on':''}"></div>`).join('');
+  const last=state.pi===pages.length-1;
+  const key=t.id+'-'+state.pi, gated=p.gate?!state.done[key]:false;
+  board.innerHTML=`<div class="page">
+    <div class="topbar"><button class="homebtn" onclick="renderHome()">🗺️ 지도</button>
+      <div class="hello" style="margin-left:4px"><div class="t" style="font-size:37px">${t.icon} ${t.title}</div></div>
+      <div class="stats"><div class="chip a">🌱 ${sproutsDone()}/${sproutsTotal()}</div><div class="chip s">⭐ 별 ${starsDone()}/${starsTotal()}</div></div></div>
+    <div class="phead"><div class="pbadge" style="background:${col.c}">${state.pi+1} / ${pages.length}</div>
+      <div class="ptitle">${p.head}</div></div>
+    <div class="pbody" id="pbody"></div>
+    <div class="navrow"><button class="navbtn ghost" ${state.pi===0?'disabled':''} onclick="go(-1)">← 이전</button>
+      <div class="dots">${dots}</div>
+      <button class="navbtn" id="nextBtn" style="background:${col.c}" ${gated?'disabled':''}
+        onclick="${last?'finishTopic()':'go(1)'}">${last?'완료 🎉':'다음 →'}</button></div></div>`;
+  p.build(document.getElementById('pbody'), t, unlockNext);
+}
+function unlockNext(){const key=TOPICS[state.ti].id+'-'+state.pi; state.done[key]=true; recomputeStars(state.ti);
+  const b=document.getElementById('nextBtn'); if(b)b.disabled=false;}
+window.go=d=>{const ni=state.pi+d; if(ni<0||ni>=TOPICS[state.ti].pages.length)return; state.pi=ni; renderTopic();};
+window.finishTopic=()=>renderHome();
+
+/* ---- 공용: 캔버스 만들기 (2x backing for crispness) ---- */
+function mkCanvas(parent,w,h){
+  const c=document.createElement('canvas'); c.className='simcanvas';
+  c.style.width=w+'px'; c.style.height=h+'px'; c.width=w*2; c.height=h*2;
+  const ctx=c.getContext('2d'); ctx.scale(2,2); parent.appendChild(c);
+  return {c,ctx,w,h};
+}
+function canvasXY(c,e){const r=c.getBoundingClientRect();
+  return {x:(e.clientX-r.left)/r.width*c.width/2, y:(e.clientY-r.top)/r.height*c.height/2};}
+
+/* ---- 공용: 체크리스트 ---- */
+function tick(body,id){const e=body.querySelector(`.ck[data-ck="${id}"]`);
+  if(e&&!e.classList.contains('on')){e.classList.add('on'); e.querySelector('.box').textContent='✅';
+    e.animate([{transform:'scale(1)'},{transform:'scale(1.15)'},{transform:'scale(1)'}],{duration:300});}}
+function allTicked(body){return [...body.querySelectorAll('.ck')].every(e=>e.classList.contains('on'));}
+
+/* ---- 공용: 도입(질문) ---- */
+function introBuilder({emoji,ask,lead,color}){return function(body,t,done){
+  body.innerHTML=`<div style="flex:1; display:flex; align-items:center; gap:28px; padding:0 12px;">
+    <div class="bigemoji pulse">${emoji}</div>
+    <div style="display:flex; flex-direction:column; gap:13px; flex:1;">
+      <div class="ask" style="font-size:46px; line-height:1.4">${ask}</div>
+      <div class="lead">${lead}</div>
+      <div class="softpill" style="align-self:flex-start; background:#fff7e3">👉 ‘다음’을 눌러 직접 조작하며 알아봐요!</div>
+    </div></div>`; done();};}
+
+/* ---- 공용: 퀴즈 ---- */
+function quizBuilder({intro,q,options,answer,explain,compact}){return function(body,t,done){
+  let solved=false;
+  const S = compact
+    ? {intro:19, ask:24, askLh:1.25, askMb:4, opt:22, pad:'8px 12px', gap:8, fb:20, fbLh:1.25, fbPt:6}
+    : {intro:26, ask:34, askLh:1.3,  askMb:8, opt:32, pad:'13px 16px', gap:12, fb:28, fbLh:1.3, fbPt:8};
+  body.innerHTML=`<div style="height:100%; display:flex; flex-direction:column;">
+    <div style="font-size:${S.intro}px;font-weight:700;color:var(--ink);flex:0 0 auto;margin-bottom:2px">${intro||'배운 내용을 확인해 볼까요?'}</div>
+    <div class="ask" style="font-size:${S.ask}px; line-height:${S.askLh}; flex:0 0 auto; margin-bottom:${S.askMb}px">📝 ${q}</div>
+    <div style="flex:1 1 0; min-height:0; overflow:hidden; display:grid; grid-template-columns:1fr 1fr; grid-auto-rows:1fr; gap:${S.gap}px; align-content:stretch;">
+      ${options.map((o,i)=>`<button class="opt" data-i="${i}" style="font-size:${S.opt}px; padding:${S.pad}">${o}</button>`).join('')}</div>
+    <div class="fbk" id="fbk" style="flex:0 0 auto; font-size:${S.fb}px; line-height:${S.fbLh}; min-height:24px; padding:${S.fbPt}px 2px 2px;"></div>
+  </div>`;
+  const opts=body.querySelectorAll('.opt'), fbk=body.querySelector('#fbk');
+  opts.forEach(b=>b.onclick=()=>{const i=Number(b.dataset.i);
+    if(i===answer){b.classList.add('correct');
+      if(!solved){solved=true; state.correct++;}
+      fbk.className='fbk good'; fbk.textContent='⭕ 정답이에요! '+(explain||'');
+      opts.forEach(x=>x.classList.add('disabled')); done();
+    }else{b.classList.add('wrong','disabled'); fbk.className='fbk bad'; fbk.textContent='❌ 다시 한 번 생각해 볼까요?';}});};}
+
+/* =========================================================================
+   ✦ 동적 시뮬레이션 1 — 물의 이동 엔진 (WaterSim)  [줄기·연결 마을]
+   ========================================================================= */
+function waterSimBuilder(cfg){ // cfg:{title, intro:[steps], showSun, showStomata, simpleHint, checks, color}
+  return function(body,t,done){
+    const col=t.col.c;
+    body.innerHTML=`
+      <div class="simwrap">
+        <div id="cvHolder"></div>
+        <div class="simside">
+          <div class="controls" id="ctr"></div>
+          <div class="meter" id="meter"></div>
+          <div class="panel" style="padding:7px 12px; flex:1; display:flex; flex-direction:column; gap:5px;">
+            <div style="font-family:'Jua'; color:var(--ink); font-size:22px">🔎 단계별 확인</div>
+            <div class="check" id="check">${cfg.checks.map(c=>`<div class="ck" data-ck="${c.id}"><span class="box">○</span><span>${c.label}</span></div>`).join('')}</div>
+            <div class="hintline" id="hint">${cfg.simpleHint||'아래 흙을 톡톡 눌러 물을 주세요.'}</div>
+          </div>
+          <button class="navbtn sm ghost" id="guide">📖 차근차근 알아보기</button>
+        </div></div>`;
+    const cv=mkCanvas(document.getElementById('cvHolder'),540,360);
+    const sim=new WaterSim(cv,{showSun:cfg.showSun, showStomata:cfg.showStomata,
+      onMilestone:onMile});
+    // controls
+    const ctr=document.getElementById('ctr');
+    const waterBtn=document.createElement('button'); waterBtn.className='navbtn sm'; waterBtn.style.background=col;
+    waterBtn.textContent='💧 물 주기'; waterBtn.onclick=()=>{for(let i=0;i<6;i++)sim.addSoilDrop(undefined,true); tick(body,'water'); checkDone();};
+    ctr.appendChild(waterBtn);
+    if(cfg.showSun){const sb=document.createElement('button'); sb.className='toggle on'; sb.id='sunT'; sb.textContent='☀️ 날씨: 맑음';
+      sb.onclick=()=>{sim.sun=!sim.sun; sb.classList.toggle('on',sim.sun); sb.textContent=(sim.sun?'☀️ 날씨: 맑음':'☁️ 날씨: 흐림');
+        if(!sim.sun) popModal('☁️','흐린 날이에요','구름이 끼면 잎의 <b>증산</b>이 약해져 물을 끌어올리는 힘이 줄어요. 물이 더 천천히 올라가죠?',col);
+      }; ctr.appendChild(sb);}
+    if(cfg.showStomata){const stb=document.createElement('button'); stb.className='toggle on'; stb.id='stoT'; stb.textContent='🌿 기공: 열림';
+      stb.onclick=()=>{sim.stomata=!sim.stomata; stb.classList.toggle('on',sim.stomata); stb.textContent='🌿 기공: '+(sim.stomata?'열림':'닫힘');
+        if(!sim.stomata){popModal('🚪','기공을 닫았어요','기공이 닫히면 <b>증산</b>이 멈춰요. 그러면 물을 위로 끌어올리는 힘이 사라져 물의 이동이 거의 멈춘답니다!',col); tick(body,'stoma'); checkDone();}
+      }; ctr.appendChild(stb);}
+    // canvas tap = water
+    cv.c.onclick=e=>{const p=canvasXY(cv.c,e); if(p.y>sim.soilY-10){sim.addSoilDrop(p.x,true); tick(body,'water'); checkDone();}};
+    document.getElementById('guide').onclick=()=>openModal(cfg.intro,{color:col});
+    // meter refs
+    function renderMeter(){document.getElementById('meter').innerHTML=
+      `<div class="m">흡수 <b>${sim.counts.absorbed}</b></div>
+       <div class="m">잎 도달 <b>${sim.counts.reached}</b></div>
+       ${cfg.showStomata?`<div class="m">증산 <b>${sim.counts.transpired}</b></div>`:''}`;}
+    function updateHint(){const left=cfg.checks.filter(c=>{const e=body.querySelector('.ck[data-ck="'+c.id+'"]'); return e&&!e.classList.contains('on');}).map(c=>c.label);
+      const h=document.getElementById('hint'); if(h&&left.length)h.innerHTML='💧 남은 단계: <b>'+left.join(' · ')+'</b>';}
+    function checkDone(){ if(allTicked(body)){const h=document.getElementById('hint'); if(h)h.textContent='👍 모든 단계를 확인했어요! ‘다음’으로 넘어가요.'; done();} else updateHint(); }
+    // milestone handler
+    function onMile(key){
+      if(key==='absorb'){tick(body,'absorb'); popModal('💧','뿌리가 물을 흡수했어요!','땅속의 물이 뿌리털로 쏙 빨려 들어갔어요. 이제 줄기를 타고 올라갈 거예요.',col);}
+      if(key==='reach'){tick(body,'reach'); popModal('🍃','잎까지 도착!','물이 줄기 속 <b>물관</b>을 타고 잎까지 올라왔어요. 눈에 보이지 않던 물의 이동을 직접 확인했어요!',col);}
+      if(key==='transp'&&cfg.showStomata){tick(body,'transp'); popModal('💨','증산이 일어났어요!','잎의 기공으로 물이 <b>수증기</b>가 되어 빠져나갔어요. 이 힘이 아래의 물을 계속 끌어올려요.',col);}
+      checkDone();
+    }
+    // loop
+    loop(()=>{sim.update(); sim.draw(); renderMeter();});
+    renderMeter();
+    // 첫 방문 자동 안내
+    const k='guide-'+t.id+'-'+state.pi;
+    if(!state.seen[k]){state.seen[k]=1; delay(()=>openModal(cfg.intro,{color:col}),350);}
+  };
+}
+
+class WaterSim{
+  constructor(cv,cfg){this.ctx=cv.ctx; this.W=cv.w; this.H=cv.h; this.cfg=cfg;
+    this.sun=true; this.stomata=true; this.counts={absorbed:0,reached:0,transpired:0};
+    this.soilY=this.H-86; this.leafY=72; this.midX=this.W/2;
+    this.lanes=[this.midX-13,this.midX,this.midX+13];
+    this.ms={absorb:false,reach:false,transp:false}; this.parts=[];
+    this.frame=0; this.pourX=this.midX; this.pourUntil=-1;
+    this.root=genRoot(this.midX,this.soilY,this.H-this.soilY-6,46,7);
+    for(let i=0;i<24;i++)this.addSoilDrop();}
+  addSoilDrop(x,fromTop){ if(this.parts.length>82)return;
+    const px=x!=null?x:50+Math.random()*(this.W-100);
+    if(fromTop){ this.parts.push({x:px+(Math.random()-.5)*8,y:6+Math.random()*16,ph:'fall',lane:0,a:1,t:0,side:Math.random()<.5?-1:1,ty:this.soilY+12+Math.random()*52});
+      this.pourX=px; this.pourUntil=this.frame+48; }
+    else this.parts.push({x:px,y:this.soilY+12+Math.random()*52,ph:'soil',lane:0,a:1,t:Math.random()*200,side:Math.random()<.5?-1:1});}
+  tf(){let f=0.4; if(this.cfg.showSun){ if(this.sun)f+=0.55; } else f+=0.55;
+    if(this.cfg.showStomata && !this.stomata)f=0.05; return f;}
+  bump(k){if(!this.ms[k]){this.ms[k]=true; this.cfg.onMilestone&&this.cfg.onMilestone(k);}}
+  update(){this.frame++; const tf=this.tf();
+    for(const p of this.parts){ p.t++;
+      if(p.ph==='fall'){p.y+=4.4; if(p.y>=p.ty)p.ph='soil';}
+      else if(p.ph==='soil'){ p.x+=Math.sin(p.t*0.03)*0.15; 
+        if(Math.random()<0.006*(0.5+tf)){p.ph='absorb'; p.lane=this.lanes[(Math.random()*3)|0];}}
+      else if(p.ph==='absorb'){const tx=this.midX,ty=this.soilY; p.x+=(tx-p.x)*0.07; p.y+=(ty-p.y)*0.07;
+        if(Math.abs(p.x-tx)<5&&Math.abs(p.y-ty)<5){p.ph='rise'; this.counts.absorbed++; this.bump('absorb');}}
+      else if(p.ph==='rise'){p.x+=(p.lane-p.x)*0.25; p.y-=(0.5+tf*1.8);
+        if(p.y<=this.leafY){p.ph='leaf'; p.y=this.leafY; p.t=0; this.counts.reached++; this.bump('reach');}}
+      else if(p.ph==='leaf'){const tx=this.midX+p.side*(50+Math.random()*30); p.x+=(tx-p.x)*0.05;
+        const open=this.cfg.showStomata?this.stomata:true;
+        if(open&&p.t>120+Math.random()*200){p.ph='vapor'; this.counts.transpired++; this.bump('transp');}}
+      else if(p.ph==='vapor'){p.y-=0.9; p.x+=Math.sin(p.t*0.05)*0.7; p.a-=0.012;
+        if(p.a<=0){p.ph='soil'; p.a=1; p.x=50+Math.random()*(this.W-100); p.y=this.soilY+12+Math.random()*52; p.t=0; p.side=Math.random()<.5?-1:1;}}}}
+  draw(){const c=this.ctx,W=this.W,H=this.H,mx=this.midX,sy=this.soilY,ly=this.leafY;
+    c.clearRect(0,0,W,H);
+    const sky=c.createLinearGradient(0,0,0,sy);
+    const bright=this.cfg.showSun?this.sun:true;
+    sky.addColorStop(0,bright?'#eaf6ff':'#dde4ee'); sky.addColorStop(1,'#f3faf0');
+    c.fillStyle=sky; c.fillRect(0,0,W,sy);
+    c.fillStyle='#7a5230'; c.fillRect(0,sy,W,H-sy);
+    c.fillStyle='#6c4626'; for(let x=0;x<W;x+=26)c.fillRect(x,sy+4,12,4);
+    // 물뿌리개(물 줄 때)
+    if(this.frame<this.pourUntil) this.drawCan(this.pourX);
+    // sun
+    if(this.cfg.showSun){ c.fillStyle='#ffd24d'; c.beginPath(); c.arc(64,52,22,0,7); c.fill();
+        if(this.sun){ c.strokeStyle='#ffd24d'; c.lineWidth=3; for(let i=0;i<8;i++){const a=i/8*Math.PI*2;
+          c.beginPath(); c.moveTo(64+Math.cos(a)*28,52+Math.sin(a)*28); c.lineTo(64+Math.cos(a)*36,52+Math.sin(a)*36); c.stroke();}}
+        else{ c.fillStyle='#eef1f5'; c.strokeStyle='#d3dae3'; c.lineWidth=2;
+          [[0,0,20],[-16,5,14],[16,5,15],[-6,-9,12]].forEach(o=>{c.beginPath(); c.arc(70+o[0],54+o[1],o[2],0,7); c.fill();});} }
+    // stem
+    c.fillStyle='#7bbd55'; this.rr(mx-16,ly,32,sy-ly,10);
+    // xylem lanes (물관)
+    c.strokeStyle='rgba(255,255,255,.55)'; c.lineWidth=2.5;
+    this.lanes.forEach(x=>{c.beginPath(); c.moveTo(x,ly+6); c.lineTo(x,sy-2); c.stroke();});
+    c.fillStyle='#3f7a3a'; c.font='bold 22px Noto Sans KR'; c.fillText('물관',mx+22,(ly+sy)/2);
+    // root (자연스러운 형태, 고정)
+    drawRoot(c,this.root,'#9c6a34','#c79a63',null);
+    c.fillStyle='#8a5a2b'; c.font='bold 20px Noto Sans KR'; c.fillText('뿌리털',mx+30,sy+30);
+    // leaves (물이 잘 도달할수록 더 잘 자람)
+    const g=Math.min(1,this.counts.reached/26);
+    this.leaf(mx-46,ly+8,-1,g); this.leaf(mx+46,ly+8,1,g);
+    if(g>0.5){this.leaf(mx-40,ly+34,-1,g*0.8); this.leaf(mx+40,ly+34,1,g*0.8);}
+    if((this.cfg.showStomata?this.stomata:true)&&this.counts.transpired>0){
+      c.font='28px serif'; c.globalAlpha=.7; c.fillText('💨',mx-70,ly-6); c.fillText('💨',mx+58,ly-10); c.globalAlpha=1;}
+    // particles
+    for(const p of this.parts){ c.globalAlpha=p.a;
+      if(p.ph==='vapor'){c.fillStyle='rgba(150,200,235,'+p.a+')'; c.beginPath(); c.arc(p.x,p.y,3,0,7); c.fill();}
+      else{c.fillStyle='#3d92d8'; c.beginPath(); c.arc(p.x,p.y,3.4,0,7); c.fill();
+        c.fillStyle='rgba(255,255,255,.5)'; c.beginPath(); c.arc(p.x-1,p.y-1,1.2,0,7); c.fill();}}
+    c.globalAlpha=1;}
+  leaf(x,y,dir,g){const c=this.ctx; const s=1+(g||0)*0.6; c.fillStyle='#4fae6d'; c.beginPath();
+    c.ellipse(x,y,30*s,15*s,dir*0.5,0,7); c.fill(); c.strokeStyle='#2f7a4f'; c.lineWidth=1.5;
+    c.beginPath(); c.moveTo(this.midX,y); c.lineTo(x,y); c.stroke();}
+  rr(x,y,w,h,r){const c=this.ctx; c.beginPath(); c.moveTo(x+r,y); c.arcTo(x+w,y,x+w,y+h,r);
+    c.arcTo(x+w,y+h,x,y+h,r); c.arcTo(x,y+h,x,y,r); c.arcTo(x,y,x+w,y,r); c.closePath(); c.fill();}
+  drawCan(px){const c=this.ctx, x=Math.max(52,Math.min(this.W-18,px)), y=22, sy=this.soilY;
+    c.strokeStyle='rgba(70,150,210,.55)'; c.lineWidth=3; c.setLineDash([4,5]);
+    c.beginPath(); c.moveTo(x,y+4); c.lineTo(x,sy); c.stroke(); c.setLineDash([]);
+    c.fillStyle='#4aa3d8'; c.beginPath(); c.roundRect(x-46,y-14,30,22,6); c.fill();
+    c.strokeStyle='#4aa3d8'; c.lineWidth=3; c.beginPath(); c.arc(x-31,y-16,8,Math.PI,0); c.stroke();
+    c.fillStyle='#4aa3d8'; c.beginPath(); c.moveTo(x-18,y-8); c.lineTo(x+2,y); c.lineTo(x-18,y+6); c.closePath(); c.fill();}
+}
+
+/* =========================================================================
+   ✦ 동적 시뮬레이션 2 — 뿌리의 흡수 (root)
+   ========================================================================= */
+function rootAbsorbBuilder(){return function(body,t,done){
+  const col=t.col.c;
+  body.innerHTML=`<div class="simwrap"><div id="cvHolder"></div>
+    <div class="simside">
+      <div class="controls">
+        <button class="navbtn sm" id="water" style="background:${col}">💧 물 주기</button>
+      </div>
+      <div class="softpill">🌿 뿌리털 개수: <b id="hn">6</b>개</div>
+      <input id="rng" type="range" min="3" max="34" value="6" style="width:100%; accent-color:${col}">
+      <div class="meter"><div class="m">흡수한 물 <b id="abs">0</b></div><div class="m">식물 키 <b id="gh">0</b>%</div></div>
+      <div class="panel" style="padding:7px 12px; flex:1; display:flex; flex-direction:column; gap:5px;">
+        <div style="font-family:'Jua'; color:var(--ink); font-size:22px">🔎 단계별 확인</div>
+        <div class="check" id="check">
+          <div class="ck" data-ck="water"><span class="box">○</span><span>흙에 물을 주었어요</span></div>
+          <div class="ck" data-ck="absorb"><span class="box">○</span><span>뿌리털이 물을 흡수해요</span></div>
+          <div class="ck" data-ck="many"><span class="box">○</span><span>뿌리털이 많을수록 빨라요</span></div>
+          <div class="ck" data-ck="grow"><span class="box">○</span><span>물을 흡수하면 위쪽이 자라요</span></div>
+        </div>
+        <div class="hintline" id="hint">흙(아래 갈색 부분)을 톡톡 눌러 물을 주세요.</div>
+      </div>
+      <button class="navbtn sm ghost" id="guide">📖 차근차근 알아보기</button>
+    </div></div>`;
+  const cv=mkCanvas(document.getElementById('cvHolder'),540,360);
+  const ctx=cv.ctx,W=cv.w,H=cv.h, soilY=150, mx=W/2;
+  const root=genRoot(mx,soilY,H-soilY-10,150,13);
+  let hairs=6, parts=[], absorbed=0, frame=0, pourX=mx, pourUntil=-1, g=0;
+  function seed(x){if(parts.length>120)return; parts.push({x:x,y:soilY+12+Math.random()*(H-soilY-34),ph:'soil',a:1});}
+  function addDrop(x){if(parts.length>120)return; const px=x!=null?x:40+Math.random()*(W-80);
+    parts.push({x:px+(Math.random()-.5)*8, y:6+Math.random()*16, ph:'fall', a:1, ty:soilY+14+Math.random()*(H-soilY-36)});
+    pourX=px; pourUntil=frame+46;}
+  function drawCan(px){const x=Math.max(50,Math.min(W-18,px)), y=22;
+    ctx.strokeStyle='rgba(70,150,210,.55)'; ctx.lineWidth=3; ctx.setLineDash([4,5]);
+    ctx.beginPath(); ctx.moveTo(x,y+4); ctx.lineTo(x,soilY); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle='#4aa3d8'; ctx.beginPath(); ctx.roundRect(x-46,y-14,30,22,6); ctx.fill();
+    ctx.strokeStyle='#4aa3d8'; ctx.lineWidth=3; ctx.beginPath(); ctx.arc(x-31,y-16,8,Math.PI,0); ctx.stroke();
+    ctx.fillStyle='#4aa3d8'; ctx.beginPath(); ctx.moveTo(x-18,y-8); ctx.lineTo(x+2,y); ctx.lineTo(x-18,y+6); ctx.closePath(); ctx.fill();}
+  for(let i=0;i<8;i++)seed(40+Math.random()*(W-80));
+  function hairTips(){return root.hairs.slice(0,hairs);}
+  cv.c.onclick=e=>{const p=canvasXY(cv.c,e); if(p.y>soilY){for(let i=0;i<5;i++)addDrop(p.x+(Math.random()-.5)*40); tickW();}};
+  document.getElementById('water').onclick=()=>{for(let i=0;i<8;i++)addDrop(); tickW();};
+  function tickW(){tick(body,'water'); chk();}
+  const rng=document.getElementById('rng');
+  rng.oninput=()=>{hairs=+rng.value; document.getElementById('hn').textContent=hairs;
+    if(hairs>=26){tick(body,'many'); chk();}};
+  document.getElementById('guide').onclick=guide;
+  function guide(){openModal([
+    {art:'🌱',title:'뿌리가 하는 일',body:'뿌리는 땅속의 <b>물과 양분을 흡수</b>하고, 식물이 쓰러지지 않게 <b>지지</b>하며, 고구마처럼 양분을 <b>저장</b>하기도 해요.'},
+    {art:'🧵',title:'뿌리털의 비밀',body:'뿌리 끝에는 솜털 같은 <b>뿌리털</b>이 아주 많아요. 뿌리털이 많을수록 물과 닿는 면이 넓어져 흡수를 더 잘한답니다.'},
+    {art:'🌳',title:'직접 해 보기',body:'흙을 눌러 물을 주고 <b>뿌리털</b>을 늘려 보세요. 흡수가 빨라지면 <b>줄기와 잎</b>이 쑥쑥 자라는 것도 관찰해요!'}
+  ],{color:col});}
+  function chk(){if(allTicked(body)){document.getElementById('hint').textContent='👍 모든 단계 확인! ‘다음’으로 넘어가요.'; done();}}
+  loop(()=>{
+    const tips=hairTips(), pull=0.5+hairs/34*1.4, reach=(46+hairs*4)**2;
+    for(const p of parts){
+      if(p.ph==='fall'){p.y+=4.4; if(p.y>=p.ty){p.ph='soil'; p.life=0;}}
+      else if(p.ph==='soil'){ p.life=(p.life||0)+1;
+        p.x+=Math.sin((p.y+p.life)*0.05)*0.25; p.y+=0.04;
+        let near=null,nd=1e9;
+        for(const h of tips){const d=(p.x-h.ex)**2+(p.y-h.ey)**2; if(d<nd){nd=d;near=h;}}
+        if(near && nd<reach && Math.random()<0.02){p.ph='go'; p.tx=near.ex; p.ty=near.ey;}     // 천천히 흡수
+        else if(p.life>360){p.a-=0.012; if(p.a<=0)p.ph='dead';}                                 // 오래 머문 물은 서서히 증발
+      }
+      else if(p.ph==='go'){p.x+=(p.tx-p.x)*0.06*pull; p.y+=(p.ty-p.y)*0.06*pull;
+        if(Math.abs(p.x-p.tx)<4&&Math.abs(p.y-p.ty)<4){p.ph='in'; absorbed++; tick(body,'absorb'); chk();}}
+      else if(p.ph==='in'){p.x+=(mx-p.x)*0.06; p.y-=1.4; p.a-=0.03; if(p.a<=0)p.ph='dead';}
+    }
+    parts=parts.filter(p=>p.ph!=='dead');
+    // 땅속에 남아 있는 물의 양(촉촉함)
+    const soilWater=parts.filter(p=>p.ph==='fall'||p.ph==='soil'||p.ph==='go').length;
+    const moist=Math.min(1, soilWater/16);               // 물이 어느 정도 있어야 잘 자람
+    const hairFac=0.2+(hairs/34)*0.8;
+    // 물이 없으면 아주 느리게, 물+뿌리털이 많으면 쑥쑥
+    g=Math.min(1, g + 0.0003 + moist*hairFac*0.006);
+    if(g>=0.6){tick(body,'grow'); chk();}
+    if(hairs>=26){tick(body,'many'); chk();}
+    document.getElementById('abs').textContent=absorbed;
+    document.getElementById('gh').textContent=Math.round(g*100);
+    const hint=document.getElementById('hint');
+    if(!allTicked(body)){
+      if(soilWater<3) hint.textContent='💧 흙이 말랐어요! 물을 주어야 잘 자라요.';
+      else if(hairs<26) hint.textContent='🌿 물이 있어요! 뿌리털을 늘리면 더 쑥쑥 자라요.';
+      else hint.textContent='👍 물도 있고 뿌리털도 많아요. 쑥쑥 자라요!';
+    }
+    // ---- draw ----
+    frame++;
+    ctx.clearRect(0,0,W,H);
+    const sky=ctx.createLinearGradient(0,0,0,soilY); sky.addColorStop(0,'#eaf6ff'); sky.addColorStop(1,'#f1f8ef');
+    ctx.fillStyle=sky; ctx.fillRect(0,0,W,soilY);
+    ctx.fillStyle='#ffd24d'; ctx.beginPath(); ctx.arc(54,42,18,0,7); ctx.fill();
+    ctx.fillStyle='#7a5230'; ctx.fillRect(0,soilY,W,H-soilY);
+    ctx.fillStyle='#6c4626'; for(let x=0;x<W;x+=24)ctx.fillRect(x,soilY+3,11,3);
+    if(frame<pourUntil) drawCan(pourX);
+    // 자라는 줄기 + 잎
+    const stemH=24+g*104, topY=soilY-stemH;
+    ctx.strokeStyle='#62a73d'; ctx.lineCap='round'; ctx.lineWidth=7+g*4;
+    ctx.beginPath(); ctx.moveTo(mx,soilY); ctx.lineTo(mx,topY); ctx.stroke(); ctx.lineCap='butt';
+    const drawLeaf=(x,y,dir,sc)=>{ctx.fillStyle='#4fae6d'; ctx.beginPath();
+      ctx.ellipse(x,y,26*sc,12*sc,dir*0.5,0,7); ctx.fill();
+      ctx.strokeStyle='#2f7a4f'; ctx.lineWidth=1.5; ctx.beginPath(); ctx.moveTo(mx,y); ctx.lineTo(x,y); ctx.stroke();};
+    if(g>0.08){drawLeaf(mx-30,topY+14,-1,0.6+g*0.6); drawLeaf(mx+30,topY+14,1,0.6+g*0.6);}
+    if(g>0.5){drawLeaf(mx-34,topY+stemH*0.5,-1,0.5+g*0.5); drawLeaf(mx+34,topY+stemH*0.5,1,0.5+g*0.5);}
+    if(g>0.92){ctx.font='41px serif'; ctx.fillText('🌼',mx-11,topY-4);}
+    // 자연스러운 뿌리 + 활성 뿌리털
+    drawRoot(ctx,root,'#9c6a34','#c79a63',hairs);
+    // 물 입자
+    for(const p of parts){ctx.globalAlpha=p.a; ctx.fillStyle='#3d92d8'; ctx.beginPath(); ctx.arc(p.x,p.y,3.6,0,7); ctx.fill();
+      ctx.fillStyle='rgba(255,255,255,.5)'; ctx.beginPath(); ctx.arc(p.x-1,p.y-1,1.2,0,7); ctx.fill(); ctx.globalAlpha=1;}
+  });
+  const k='guide-'+t.id+'-'+state.pi; if(!state.seen[k]){state.seen[k]=1; delay(guide,350);}
+};}
+
+/* =========================================================================
+   ✦ 동적 시뮬레이션 3 — 광합성 (leaf)
+   ========================================================================= */
+function photoBuilder(){return function(body,t,done){
+  const col=t.col.c;
+  body.innerHTML=`<div class="simwrap"><div id="cvHolder"></div>
+    <div class="simside">
+      <div class="softpill">☁️ 구름으로 해 가리기: <b id="cv">0</b>%</div>
+      <input id="cloud" type="range" min="0" max="100" value="0" style="width:100%; accent-color:${col}">
+      <div class="meter"><div class="m">만든 양분 <b id="sug">0</b></div><div class="m">저장된 양분 <b id="st">0</b></div></div>
+      <div class="panel" style="padding:7px 12px; flex:1; display:flex; flex-direction:column; gap:5px;">
+        <div style="font-family:'Jua'; color:var(--ink); font-size:22px">🔎 단계별 확인</div>
+        <div class="check" id="check">
+          <div class="ck" data-ck="water"><span class="box">○</span><span>물이 줄기를 타고 잎으로 올라와요</span></div>
+          <div class="ck" data-ck="made"><span class="box">○</span><span>잎이 햇빛을 받아 양분을 만들어요</span></div>
+          <div class="ck" data-ck="move"><span class="box">○</span><span>양분이 줄기를 타고 이동해요</span></div>
+          <div class="ck" data-ck="store"><span class="box">○</span><span>양분이 뿌리·열매에 저장·사용돼요</span></div>
+        </div>
+        <div class="hintline" id="hint">슬라이더로 구름을 움직여 햇빛을 가려 보세요.</div>
+      </div>
+      <button class="navbtn sm ghost" id="guide">📖 차근차근 알아보기</button>
+    </div></div>`;
+  const cv=mkCanvas(document.getElementById('cvHolder'),540,360);
+  const ctx=cv.ctx,W=cv.w,H=cv.h, cx=W/2;
+  const soilTop=H-66, stemTopY=34, junctionY=104, lx=cx+62, ly=92, leafRot=-0.5;
+  const leaf2={x:cx-46, y:150}, fruit={x:cx+40, y:168}, rootC={x:cx, y:soilTop+24};
+  const dests=[{key:'root',pt:rootC},{key:'fruit',pt:fruit},{key:'leaf',pt:leaf2}];
+  let cloud=0, sugar=0, oxygen=0, stored=0, dRoot=0, dFruit=0, dLeaf=0, parts=[], frame=0;
+  const sun={x:472,y:48,r:22};
+  const slider=document.getElementById('cloud');
+  slider.oninput=()=>{cloud=+slider.value; document.getElementById('cv').textContent=cloud; chk();};
+  document.getElementById('guide').onclick=guide;
+  function rate(){return Math.max(0,(100-cloud)/100);}
+  function guide(){openModal([
+    {art:'🍃',title:'잎은 양분을 만들어요',body:'잎은 햇빛을 받아 스스로 <b>양분</b>을 만들어요. 이것을 <b>광합성</b>이라고 해요.'},
+    {art:'📦',title:'양분은 여러 곳으로 이동해요',body:'잎에서 만든 <b>양분</b>은 줄기를 타고 <b>다른 잎·열매·뿌리</b> 등 식물 곳곳으로 이동해서, 자라는 데 <b>사용</b>되거나 <b>저장</b>돼요.'},
+    {art:'☁️',title:'직접 해 보기',body:'슬라이더로 <b>구름</b>을 움직여 해를 가려 보세요. 햇빛이 줄면 양분도 적게 만들어져요. 만든 양분이 어디로 이동하는지 따라가 보세요!'}
+  ],{color:col});}
+  function chk(){if(allTicked(body)){document.getElementById('hint').textContent='👍 모든 단계 확인! ‘다음’으로 넘어가요.'; done();}}
+  function drawCloud(x,y,s){ctx.fillStyle='#f2f4f7'; ctx.strokeStyle='#d7dde6'; ctx.lineWidth=2;
+    [[0,0,26],[-22,6,18],[22,6,20],[-8,-12,16],[12,-10,15]].forEach(c=>{ctx.beginPath(); ctx.arc(x+c[0]*s,y+c[1]*s,c[2]*s,0,7); ctx.fill();});}
+  function drawLeaf(x,y,rot,sc){ ctx.save(); ctx.translate(x,y); ctx.rotate(rot); ctx.scale(sc,sc);
+    ctx.beginPath(); ctx.moveTo(0,-46); ctx.bezierCurveTo(34,-28,28,32,0,48); ctx.bezierCurveTo(-28,32,-34,-28,0,-46); ctx.closePath();
+    ctx.fillStyle='#41a86a'; ctx.fill(); ctx.strokeStyle='#2c7a4d'; ctx.lineWidth=2.5; ctx.stroke();
+    ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(0,-42); ctx.lineTo(0,44); ctx.stroke();
+    ctx.lineWidth=1.2; for(let i=-2;i<=2;i++){const yy=i*14; ctx.beginPath(); ctx.moveTo(0,yy); ctx.lineTo(19,yy-9); ctx.stroke(); ctx.beginPath(); ctx.moveTo(0,yy); ctx.lineTo(-19,yy-9); ctx.stroke();}
+    ctx.restore(); }
+  loop(()=>{ frame++;
+    const r=rate();
+    if(frame%10===0) parts.push({type:'h2o',ph:'rise',x:cx+(Math.random()-.5)*5,y:soilTop+14});
+    if(r>0 && frame%14===0) parts.push({type:'co2',x:W-16,y:ly-26+Math.random()*52});
+    for(const p of parts){
+      if(p.type==='h2o'){
+        if(p.ph==='rise'){p.y-=2.4; if(p.y<=junctionY){p.ph='toleaf';}}
+        else {p.x+=(lx-p.x)*0.07; p.y+=(ly-p.y)*0.07;
+          if(Math.abs(p.x-lx)<8&&Math.abs(p.y-ly)<8){p.dead=1; tick(body,'water'); if(r>0){if(Math.random()<r)produce();} chk();}}}
+      else if(p.type==='co2'){p.x+=(lx-p.x)*0.05; p.y+=(ly-p.y)*0.05; if(Math.abs(p.x-lx)<26)p.dead=1;}
+      else if(p.type==='nut'){ // 잎에서 만든 양분 → 줄기 → 여러 곳으로 이동
+        if(p.ph==='n1'){p.x+=(cx-p.x)*0.1; p.y+=(junctionY-p.y)*0.1; if(Math.abs(p.x-cx)<5&&Math.abs(p.y-junctionY)<6){p.ph='go'; tick(body,'move'); chk();}}
+        else {p.x+=(p.dx-p.x)*0.09; p.y+=(p.dy-p.y)*0.09;
+          if(Math.abs(p.x-p.dx)<6&&Math.abs(p.y-p.dy)<6){p.dead=1;
+            if(p.dest==='root'){dRoot++; stored++;} else if(p.dest==='fruit'){dFruit++; stored++;} else {dLeaf++;}
+            document.getElementById('st').textContent=stored; if(dRoot+dFruit>=4)tick(body,'store'); chk();}}}
+      else if(p.type==='o2'){p.y-=1.4; p.x+=Math.sin(p.y*0.05)*0.5; p.a-=0.012; if(p.a<=0)p.dead=1;}
+    }
+    parts=parts.filter(p=>!p.dead);
+    function produce(){sugar++; oxygen++;
+      const d=dests[sugar%dests.length];
+      parts.push({type:'nut',ph:'n1',x:lx+(Math.random()-.5)*26,y:ly+(Math.random()-.5)*26, dest:d.key, dx:d.pt.x+(Math.random()-.5)*14, dy:d.pt.y+(Math.random()-.5)*12});
+      parts.push({type:'o2',x:lx+(Math.random()-.5)*22,y:ly-28,a:1});
+      tick(body,'made'); document.getElementById('sug').textContent=sugar; chk();}
+    // ---- draw ----
+    ctx.clearRect(0,0,W,H);
+    const bg=ctx.createLinearGradient(0,0,0,soilTop); bg.addColorStop(0,'#eaf6ff'); bg.addColorStop(1,'#eef8ea');
+    ctx.fillStyle=bg; ctx.fillRect(0,0,W,soilTop);
+    ctx.fillStyle='#ffd24d'; ctx.beginPath(); ctx.arc(sun.x,sun.y,sun.r,0,7); ctx.fill();
+    if(r>0){ctx.strokeStyle=`rgba(255,200,60,${0.35+r*0.55})`; ctx.lineWidth=3;
+      const n=Math.round(r*5); for(let i=0;i<n;i++){const yy=ly-38+i*20; ctx.beginPath(); ctx.moveTo(sun.x-14,sun.y+12); ctx.lineTo(lx+16,yy); ctx.stroke();}}
+    if(cloud>3){const camt=cloud/100; drawCloud(sun.x+40-camt*46, sun.y+2, 0.8+camt*0.5);}
+    // 흙(지하)
+    ctx.fillStyle='#7a5230'; ctx.fillRect(0,soilTop,W,H-soilTop);
+    ctx.fillStyle='#6c4626'; for(let x=0;x<W;x+=24)ctx.fillRect(x,soilTop+2,11,3);
+    // 줄기 + 잎자루들
+    ctx.strokeStyle='#5aa05a'; ctx.lineCap='round'; ctx.lineWidth=8; ctx.beginPath(); ctx.moveTo(cx,soilTop+4); ctx.lineTo(cx,stemTopY); ctx.stroke();
+    ctx.lineWidth=5; ctx.beginPath(); ctx.moveTo(cx,junctionY); ctx.lineTo(lx-8,ly+10); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx,leaf2.y-10); ctx.lineTo(leaf2.x+8,leaf2.y); ctx.stroke();
+    // 열매(달릴수록 살짝 커지고 붉어짐)
+    const fr=8+Math.min(dFruit,10)/10*7;
+    ctx.strokeStyle='#7a9a4a'; ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(cx,junctionY+10); ctx.quadraticCurveTo(fruit.x-6,fruit.y-18,fruit.x,fruit.y-fr); ctx.stroke();
+    ctx.fillStyle=dFruit>0?'#e0603a':'#cf8f6a'; ctx.beginPath(); ctx.arc(fruit.x,fruit.y,fr,0,7); ctx.fill(); ctx.strokeStyle='#b94824'; ctx.lineWidth=1.5; ctx.stroke();
+    ctx.lineCap='butt';
+    // 잎 2장
+    drawLeaf(leaf2.x,leaf2.y,0.6,0.62); drawLeaf(lx,ly,leafRot,1);
+    // 저장 뿌리(살짝만 굵어짐)
+    const rw=18+Math.min(dRoot,16)/16*14, rh=18+Math.min(dRoot,16)/16*10;
+    ctx.fillStyle='#d98f4e'; ctx.beginPath(); ctx.ellipse(rootC.x,rootC.y,rw,rh,0,0,7); ctx.fill(); ctx.strokeStyle='#b9772f'; ctx.lineWidth=2; ctx.stroke();
+    ctx.strokeStyle='#b9772f'; ctx.lineWidth=2; ctx.lineCap='round';
+    for(let i=-1;i<=1;i++){ctx.beginPath(); ctx.moveTo(rootC.x+i*8,rootC.y+rh-3); ctx.quadraticCurveTo(rootC.x+i*14,rootC.y+rh+12,rootC.x+i*18,H-4); ctx.stroke();} ctx.lineCap='butt';
+    // 입자
+    for(const p of parts){ctx.globalAlpha=p.a==null?1:p.a;
+      if(p.type==='h2o'){ctx.fillStyle='#3d92d8'; ctx.beginPath(); ctx.arc(p.x,p.y,4.2,0,7); ctx.fill();}
+      else if(p.type==='co2'){ctx.fillStyle='#9aa0a6'; ctx.beginPath(); ctx.arc(p.x,p.y,5,0,7); ctx.fill();}
+      else if(p.type==='nut'){ctx.fillStyle='#e8b73c'; ctx.beginPath(); ctx.arc(p.x,p.y,4.6,0,7); ctx.fill(); ctx.strokeStyle='#b9892a'; ctx.lineWidth=1; ctx.stroke();}
+      else if(p.type==='o2'){ctx.fillStyle='rgba(120,200,255,'+p.a+')'; ctx.beginPath(); ctx.arc(p.x,p.y,5,0,7); ctx.fill();}
+      ctx.globalAlpha=1;}
+    // 라벨
+    ctx.font='bold 14px Noto Sans KR'; ctx.fillStyle='#3d92d8'; ctx.fillText('💧 물(올라옴)',12,soilTop-8);
+    ctx.fillStyle='#7a7f87'; ctx.fillText('🌫️ 이산화 탄소',W-150,ly-40);
+    ctx.fillStyle='#c79320'; ctx.fillText('● 양분 → 다른 잎·열매·뿌리로 이동',cx-150,H-6);
+    if(oxygen>0){ctx.fillStyle='#5aa8dc'; ctx.fillText('🫧 산소',lx-20,ly-54);}
+  });
+  const k='guide-'+t.id+'-'+state.pi; if(!state.seen[k]){state.seen[k]=1; delay(guide,350);}
+};}
+
+/* =========================================================================
+   ✦ 동적 시뮬레이션 4 — 증산 작용 (trans)
+   ========================================================================= */
+function transBuilder(){return function(body,t,done){
+  const col=t.col.c;
+  body.innerHTML=`<div class="simwrap"><div id="cvHolder"></div>
+    <div class="simside">
+      <div class="controls">
+        <button class="toggle on" id="stoT">🌿 기공: 열림</button>
+        <button class="toggle on" id="sunT">☀️ 날씨: 맑음</button>
+      </div>
+      <div class="meter"><div class="m">공기 중으로 나간 수증기 <b id="vp">0</b></div></div>
+      <div class="panel" style="padding:7px 12px; flex:1; display:flex; flex-direction:column; gap:5px;">
+        <div style="font-family:'Jua'; color:var(--ink); font-size:22px">🔎 단계별 확인</div>
+        <div class="check" id="check">
+          <div class="ck" data-ck="rise"><span class="box">○</span><span>물이 줄기를 타고 잎으로 올라와요</span></div>
+          <div class="ck" data-ck="vapor"><span class="box">○</span><span>기공으로 수증기가 빠져나가요</span></div>
+          <div class="ck" data-ck="air"><span class="box">○</span><span>수증기가 공기 중으로 사라져요</span></div>
+          <div class="ck" data-ck="close"><span class="box">○</span><span>기공을 닫으면 멈춰요</span></div>
+        </div>
+        <div class="hintline" id="hint">기공을 열고 맑은 날로 하면, 잎으로 올라온 물이 빠져나가요.</div>
+      </div>
+      <button class="navbtn sm ghost" id="guide">📖 차근차근 알아보기</button>
+    </div></div>`;
+  const cv=mkCanvas(document.getElementById('cvHolder'),540,360);
+  const ctx=cv.ctx,W=cv.w,H=cv.h, cx=W/2, leafCy=150, stoY=leafCy+24;
+  let open=true, sun=true, vapor=0, parts=[], frame=0;
+  const stoT=document.getElementById('stoT'), sunT=document.getElementById('sunT');
+  stoT.onclick=()=>{open=!open; stoT.classList.toggle('on',open); stoT.textContent='🌿 기공: '+(open?'열림':'닫힘');
+    if(open)tick(body,'open'); else {tick(body,'close'); popModal('🚪','기공을 닫았어요','기공이 닫히면 <b>증산</b>이 멈춰요. 수증기가 더 이상 빠져나가지 않아요!',col); chk();}};
+  sunT.onclick=()=>{sun=!sun; sunT.classList.toggle('on',sun); sunT.textContent=(sun?'☀️ 날씨: 맑음':'☁️ 날씨: 흐림');};
+  document.getElementById('guide').onclick=guide;
+  function drawCloud(x,y,s){ctx.fillStyle='#eef1f5'; ctx.strokeStyle='#d3dae3'; ctx.lineWidth=2;
+    [[0,0,20],[-16,5,14],[16,5,15],[-6,-9,12]].forEach(c=>{ctx.beginPath(); ctx.arc(x+c[0]*s,y+c[1]*s,c[2]*s,0,7); ctx.fill();});}
+  function guide(){openModal([
+    {art:'💧',title:'잎에 온 물은?',body:'뿌리가 빨아들인 물이 줄기를 타고 <b>잎</b>까지 올라와요. 그중 일부는 잎의 작은 구멍 <b>기공</b>으로 빠져나가요.'},
+    {art:'💨',title:'수증기로 빠져나가요',body:'기공으로 나온 물은 <b>수증기</b>가 되어 <b>공기 중으로 사라져요</b>. 이것을 <b>증산 작용</b>이라고 해요.'},
+    {art:'🌿',title:'직접 해 보기',body:'<b>기공</b>과 <b>날씨</b>를 바꾸며, 잎으로 올라온 물이 기공으로 빠져나가 공기 중으로 사라지는 모습을 관찰해요!'}
+  ],{color:col});}
+  function chk(){if(allTicked(body)){document.getElementById('hint').textContent='👍 모든 단계 확인! ‘다음’으로 넘어가요.'; done();}}
+  loop(()=>{ frame++;
+    const active=open&&sun;
+    if(frame%16===0) parts.push({ph:'rise',x:cx+(Math.random()-.5)*6,y:H-46,a:1});
+    for(const p of parts){
+      if(p.ph==='rise'){p.y-=1.8; if(p.y<=leafCy){p.ph='leaf'; p.y=leafCy; p.t=0; tick(body,'rise'); chk();}}
+      else if(p.ph==='leaf'){p.t++; p.x+=(cx-p.x)*0.02;
+        if(active && p.t>30){p.ph='vapor'; p.x=cx+(Math.random()-.5)*40; p.y=stoY; p.r=5; vapor++; tick(body,'vapor');
+          document.getElementById('vp').textContent=vapor; chk();}}
+      else if(p.ph==='vapor'){p.y-=1.7; p.x+=Math.sin(p.y*0.06)*1.0; p.r=Math.min(11,(p.r||5)+0.07); p.a-=0.012;
+        if(p.y<40 || p.a<=0){tick(body,'air'); chk(); p.dead=1;}}
+    }
+    parts=parts.filter(p=>!p.dead);
+    // ---- draw ----
+    ctx.clearRect(0,0,W,H);
+    const bg=ctx.createLinearGradient(0,0,0,H); bg.addColorStop(0,sun?'#eaf6ff':'#dfe4ea'); bg.addColorStop(1,'#eef8ea');
+    ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
+    ctx.fillStyle='#ffd24d'; ctx.beginPath(); ctx.arc(58,50,20,0,7); ctx.fill();
+    if(!sun) drawCloud(64,52,1.2);
+    // 화분 + 줄기
+    ctx.fillStyle='#cf8a4a'; ctx.fillRect(cx-34,H-38,68,32);
+    ctx.fillStyle='#62a73d'; ctx.fillRect(cx-9,leafCy+30,18,H-leafCy-66);
+    // 잎(3장)
+    ctx.fillStyle='#3fa968';
+    ctx.beginPath(); ctx.ellipse(cx-46,leafCy+18,42,18,-0.4,0,7); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(cx+46,leafCy+18,42,18,0.4,0,7); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(cx,leafCy,46,20,0,0,7); ctx.fill();
+    ctx.strokeStyle='#2c7a4d'; ctx.lineWidth=1.6;
+    ctx.beginPath(); ctx.moveTo(cx-40,leafCy); ctx.lineTo(cx+40,leafCy); ctx.stroke();
+    // 기공
+    ctx.fillStyle= open?'#1f5e3a':'#7fb795';
+    for(let i=-2;i<=2;i++){ctx.beginPath(); ctx.ellipse(cx+i*15,stoY-2, open?4:1.6, 2.6,0,0,7); ctx.fill();}
+    ctx.fillStyle='#2f7a4f'; ctx.font='bold 18px Noto Sans KR'; ctx.fillText('기공',cx+50,stoY+2);
+    // 입자 (물=파랑 점, 수증기=옅은 큰 점이 위로 올라가며 사라짐)
+    for(const p of parts){
+      if(p.ph==='vapor'){ctx.globalAlpha=Math.max(0,p.a); ctx.fillStyle='#bcdcef'; ctx.beginPath(); ctx.arc(p.x,p.y,p.r||5,0,7); ctx.fill(); ctx.globalAlpha=1;}
+      else {ctx.fillStyle='#3d92d8'; ctx.beginPath(); ctx.arc(p.x,p.y,4,0,7); ctx.fill();
+        ctx.fillStyle='rgba(255,255,255,.5)'; ctx.beginPath(); ctx.arc(p.x-1,p.y-1,1.2,0,7); ctx.fill();}}
+    if(active){ctx.font='26px serif'; ctx.globalAlpha=.85; ctx.fillText('💨',cx-12,stoY-14); ctx.globalAlpha=1;}
+    ctx.font='bold 16px Noto Sans KR'; ctx.fillStyle='#8aa0b0'; ctx.fillText('수증기는 공기 중으로 사라져요',W-250,30);
+  });
+  if(open)tick(body,'open');
+  const k='guide-'+t.id+'-'+state.pi; if(!state.seen[k]){state.seen[k]=1; delay(guide,350);}
+};}
+
+/* =========================================================================
+   꽃 — 이름표 붙이기 (SVG) + 모달 스캐폴딩
+   ========================================================================= */
+function flowerParts(body,t,done){
+  const col=t.col.c;
+  const parts=[{id:'am',label:'암술',x:120,y:58,desc:'꽃가루를 받아 씨를 만들어요'},
+    {id:'su',label:'수술',x:168,y:90,desc:'꽃가루를 만들어요'},
+    {id:'pe',label:'꽃잎',x:90,y:140,desc:'곤충을 부르고 안쪽을 보호해요'},
+    {id:'se',label:'꽃받침',x:120,y:176,desc:'꽃잎을 받쳐 보호해요'}];
+  body.innerHTML=`<div class="simwrap">
+    <div class="panel" style="flex:0 0 auto; width:430px; padding:8px;">
+      <svg viewBox="0 0 240 220" style="width:100%; height:100%">
+        <line x1="120" y1="178" x2="120" y2="215" stroke="#6aa84f" stroke-width="6"/>
+        <path d="M104 158 Q98 184 120 178 Q142 184 136 158 Z" fill="#5a9f48"/>
+        <path d="M120 178 Q108 188 96 182" stroke="#5a9f48" stroke-width="4" fill="none"/>
+        <path d="M120 178 Q132 188 144 182" stroke="#5a9f48" stroke-width="4" fill="none"/>
+        <ellipse cx="120" cy="116" rx="14" ry="44" fill="#f7c8da"/>
+        <ellipse cx="120" cy="116" rx="46" ry="14" fill="#f4b8cf" transform="rotate(35 120 116)"/>
+        <ellipse cx="120" cy="116" rx="46" ry="14" fill="#f4b8cf" transform="rotate(-35 120 116)"/>
+        <ellipse cx="120" cy="116" rx="46" ry="14" fill="#f4b8cf" transform="rotate(90 120 116)"/>
+        <circle cx="120" cy="116" r="16" fill="#f5d76e"/>
+        <line x1="120" y1="116" x2="120" y2="62" stroke="#e8a14b" stroke-width="3"/><circle cx="120" cy="58" r="6" fill="#d98f3a"/>
+        <line x1="120" y1="116" x2="164" y2="92" stroke="#e8a14b" stroke-width="3"/><circle cx="168" cy="90" r="5" fill="#d98f3a"/>
+        ${parts.map(p=>`<circle class="slot" data-id="${p.id}" cx="${p.x}" cy="${p.y}" r="13" fill="rgba(255,255,255,.75)" stroke="${col}" stroke-width="2" stroke-dasharray="4 3" style="cursor:pointer"/>
+          <text class="slotxt" data-id="${p.id}" x="${p.x}" y="${p.y+4}" text-anchor="middle" font-family="Jua" font-size="20" fill="${t.col.d}">?</text>`).join('')}
+      </svg>
+    </div>
+    <div class="simside">
+      <div style="font-size:28px;font-weight:700;color:var(--ink)">🏷️ 이름표를 누른 뒤, 꽃에서 알맞은 자리를 누르세요.</div>
+      <div id="labels" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
+      <div class="panel" style="padding:10px 12px; flex:1;">
+        <div class="check" id="check">${parts.map(p=>`<div class="ck" data-ck="${p.id}"><span class="box">○</span><span>${p.label}</span></div>`).join('')}</div>
+      </div>
+      <div class="fbk good" id="ff" style="min-height:24px"></div>
+      <button class="navbtn sm ghost" id="guide">📖 차근차근 알아보기</button>
+    </div></div>`;
+  const lab=body.querySelector('#labels'); let sel=null, placed=0;
+  [...parts].sort(()=>Math.random()-.5).forEach(p=>{const b=document.createElement('button');
+    b.className='tag'; b.style.cursor='pointer'; b.style.fontSize='17px'; b.textContent=p.label; b.dataset.id=p.id;
+    b.onclick=()=>{lab.querySelectorAll('.tag').forEach(x=>x.style.outline=''); sel=b; b.style.outline='3px solid '+col;};
+    lab.appendChild(b);});
+  body.querySelectorAll('.slot').forEach(s=>s.onclick=()=>{ if(!sel||s.dataset.done)return;
+    const fb=body.querySelector('#ff');
+    if(sel.dataset.id===s.dataset.id){ s.dataset.done=1; s.setAttribute('fill','#fff'); s.setAttribute('stroke-dasharray','');
+      body.querySelector(`text.slotxt[data-id="${s.dataset.id}"]`).textContent=sel.textContent;
+      const p=parts.find(x=>x.id===s.dataset.id); fb.className='fbk good'; fb.innerHTML=`✅ <b>${p.label}</b>: ${p.desc}`;
+      tick(body,s.dataset.id); sel.remove(); sel=null; placed++;
+      if(placed===parts.length){fb.innerHTML='🎉 꽃의 네 부분을 모두 찾았어요!'; done();}
+    }else{fb.className='fbk bad'; fb.textContent='그 자리가 아니에요. 다시 살펴볼까요?'; s.animate([{r:13},{r:17},{r:13}],{duration:250});}});
+  body.querySelector('#guide').onclick=()=>openModal([
+    {art:'🌸',title:'꽃이 하는 일',body:'꽃은 <b>씨를 만들어</b> 식물을 퍼뜨려요. 그래서 식물의 번식에 꼭 필요한 기관이에요.'},
+    {art:'🔍',title:'꽃의 네 부분',body:'<b>암술</b>(씨를 만듦), <b>수술</b>(꽃가루를 만듦), <b>꽃잎</b>(보호·유인), <b>꽃받침</b>(받쳐 보호)으로 이루어져요.'},
+    {art:'🌼',title:'일부 구조가 없는 꽃도 있어요',body:'네 부분을 모두 갖춘 꽃을 <b>완전화</b>라고 해요. 하지만 <b>호박꽃·오이꽃</b>처럼 암술이나 수술 등 <b>일부 구조가 없는 꽃(불완전화)</b>도 있어요.'}
+  ],{color:col});
+}
+
+/* =========================================================================
+   최종 보상
+   ========================================================================= */
+function finalReward(body,t,done){
+  const sd=sproutsDone(), st=sproutsTotal(), sv=starsDone(), all=allComplete();
+  body.innerHTML=`<div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; text-align:center;">
+    <div style="font-family:'Jua'; font-size:30px; color:var(--ink)">🎉 식물 성장 교실 학습 완료!</div>
+    <div style="display:flex; align-items:center; gap:18px;">
+      <div class="panel" style="padding:10px 18px; display:flex; flex-direction:column; align-items:center; gap:2px; background:#fffdf2; border-color:#f0d98a;">
+        <div class="pulse">${goldSproutPotted(118)}</div>
+        <div style="font-family:'Jua'; font-size:26px; color:#d9a21a">황금 새싹 획득!</div>
+      </div>
+      <div class="panel" style="padding:12px 16px; text-align:left; max-width:330px;">
+        <div style="font-family:'Jua'; font-size:20px; color:var(--ink); margin-bottom:6px">🏆 어떻게 받았나요?</div>
+        <div style="font-size:16px; font-weight:700; line-height:1.5; color:var(--ink)">
+          ① 활동을 마칠 때마다 🌱 새싹을 모았어요.<br>
+          ② 한 마을을 모두 끝내 ⭐ 별을 얻었어요.<br>
+          ③ <b>7개 마을을 모두 마치자</b> 모은 새싹이 자라 ${GOLD} <b>황금 새싹</b>이 되었어요!
+        </div>
+      </div>
+    </div>
+    <div style="display:flex; gap:10px;">
+      <div class="chip a" style="font-size:20px">🌱 새싹 ${sd}/${st}</div>
+      <div class="chip s" style="font-size:20px">⭐ 별 ${sv}/${starsTotal()}</div>
+    </div>
+    <div style="font-size:16px; font-weight:700; color:var(--ink-soft)">${all?'모든 마을을 마쳐 황금 새싹을 완성했어요!':'아직 못 끝낸 마을이 있어요. 모두 마치면 황금 새싹이 완성돼요!'}</div>
+    <div class="lead" style="max-width:720px; font-size:17px">세포 → 뿌리 → 줄기 → 잎 → 증산 작용 → 꽃까지, 식물의 각 기관이 <b>서로 연결되어</b> 함께 일한다는 것을 직접 확인했어요!</div>
+  </div>`;
+  done();
+}
+
+/* 식물 관찰 노트 — 기능 연결로 정리 + JPG 저장 */
+function noteActivity(body,t,done){
+  const col=t.col.c;
+  const rows=[
+    {id:'cell',icon:'🔬',name:'세포',fn:'몸을 이루는 가장 작은 단위'},
+    {id:'root',icon:'🌱',name:'뿌리',fn:'물·양분 흡수, 지지, 저장'},
+    {id:'stem',icon:'🎋',name:'줄기',fn:'물과 양분이 지나는 통로'},
+    {id:'leaf',icon:'🍃',name:'잎',fn:'햇빛으로 양분을 만듦(광합성)'},
+    {id:'trans',icon:'💧',name:'증산 작용',fn:'기공으로 물이 수증기로 나감'},
+    {id:'flower',icon:'🌸',name:'꽃',fn:'씨를 만들어 번식'}
+  ];
+  body.innerHTML=`<div class="simwrap">
+    <div class="panel" style="flex:1; padding:12px 16px; display:flex; flex-direction:column; gap:4px; background:#fffaf0;">
+      <div style="font-family:'Jua'; font-size:23px; color:var(--ink); text-align:center; margin-bottom:2px">📒 나의 식물 관찰 노트</div>
+      ${rows.map(r=>`<div class="nrow" data-id="${r.id}" style="display:flex; align-items:center; gap:8px; padding:4px 6px; border-bottom:2px dashed #e7d4ab; cursor:pointer;">
+        <span style="font-size:24px">${r.icon}</span>
+        <span style="font-family:'Jua'; font-size:20px; color:${col}; min-width:60px">${r.name}</span>
+        <span style="font-size:18px; color:var(--ink-soft)">→</span>
+        <span class="fill" style="font-size:18px; font-weight:700; color:#c9b48a; flex:1">＿＿＿＿＿＿＿＿</span>
+      </div>`).join('')}
+    </div>
+    <div class="simside" style="flex:0 0 320px;">
+      <div style="font-size:19px; font-weight:700; color:var(--ink)">🏷️ 기능을 눌러 알맞은 기관에 연결해 노트를 완성해요.</div>
+      <div id="fnchips" style="display:flex; flex-wrap:wrap; gap:7px;"></div>
+      <div class="fbk good" id="nf" style="min-height:24px"></div>
+      <button class="navbtn sm" id="save" style="background:${col}; opacity:.4; pointer-events:none">📥 노트를 JPG로 저장</button>
+    </div></div>`;
+  const chipBox=body.querySelector('#fnchips'); let sel=null, placed=0;
+  rows.slice().sort(()=>Math.random()-.5).forEach(r=>{const b=document.createElement('button');
+    b.className='tag'; b.style.cursor='pointer'; b.style.fontSize='17px'; b.textContent=r.fn; b.dataset.id=r.id;
+    b.onclick=()=>{chipBox.querySelectorAll('.tag').forEach(x=>x.style.outline=''); sel=b; b.style.outline='3px solid '+col;};
+    chipBox.appendChild(b);});
+  body.querySelectorAll('.nrow').forEach(row=>row.onclick=()=>{ if(!sel||row.dataset.filled)return;
+    const nf=body.querySelector('#nf');
+    if(sel.dataset.id===row.dataset.id){row.dataset.filled=1; const r=rows.find(x=>x.id===row.dataset.id);
+      const f=row.querySelector('.fill'); f.textContent=r.fn; f.style.color='var(--ink)'; row.style.background='#f1f8ee';
+      sel.remove(); sel=null; placed++; nf.className='fbk good'; nf.textContent='좋아요! 👍';
+      if(placed===rows.length){nf.textContent='🎉 노트 완성! 아래 버튼으로 JPG 그림으로 저장할 수 있어요.';
+        const sv=body.querySelector('#save'); sv.style.opacity='1'; sv.style.pointerEvents='auto'; done();}
+    }else{nf.className='fbk bad'; nf.textContent='그 기관의 기능이 아니에요. 다시 살펴볼까요?';}});
+  body.querySelector('#save').onclick=()=>saveNoteJPG(rows);
+}
+function saveNoteJPG(rows){
+  const W=920, H=130+rows.length*88;
+  const c=document.createElement('canvas'); c.width=W; c.height=H; const x=c.getContext('2d');
+  x.fillStyle='#fffaf0'; x.fillRect(0,0,W,H);
+  x.fillStyle='#f4e4bf'; x.fillRect(0,0,W,84);
+  x.fillStyle='#5b4634'; x.textAlign='left'; x.textBaseline='alphabetic';
+  x.font='bold 40px "Noto Sans KR", sans-serif'; x.fillText('📒 나의 식물 관찰 노트', 30, 56);
+  rows.forEach((r,i)=>{const y=150+i*88;
+    x.font='42px serif'; x.fillText(r.icon, 32, y+12);
+    x.fillStyle='#2c7a4d'; x.font='bold 32px "Noto Sans KR", sans-serif'; x.fillText(r.name, 96, y+6);
+    x.fillStyle='#977a5b'; x.font='28px "Noto Sans KR", sans-serif'; x.fillText('→', 230, y+6);
+    x.fillStyle='#5b4634'; x.font='27px "Noto Sans KR", sans-serif'; x.fillText(r.fn, 280, y+6);
+    x.strokeStyle='#e7d4ab'; x.lineWidth=2; x.beginPath(); x.moveTo(30,y+34); x.lineTo(W-30,y+34); x.stroke();
+  });
+  try{ const url=c.toDataURL('image/jpeg',0.92);
+    const a=document.createElement('a'); a.href=url; a.download='식물_관찰_노트.jpg';
+    document.body.appendChild(a); a.click(); a.remove(); }catch(e){}
+}
+const TOPICS=[
+{id:'cell',title:'세포 마을',icon:'🔬',col:COLORS.cell,desc:'식물의 가장 작은 방',pages:[
+  {head:'식물은 무엇으로 이루어질까?',build:introBuilder({emoji:'🔬',
+    ask:'모든 식물의 몸은 아주 작은 <span style="color:#359384">세포</span>로 이루어져 있어요.',
+    lead:'세포는 생물을 이루는 가장 작은 단위예요. 현미경으로만 보이는 식물 세포의 생김새를 자세히 살펴봐요.'})},
+  {head:'식물 세포의 구조 (이름표 붙이기)',gate:true,build:cellParts},
+  {head:'확인 퀴즈',gate:true,build:quizBuilder({intro:'세포에 대해 배운 내용을 확인해요.',
+    q:'식물 세포의 가장 바깥에서 세포를 단단하게 보호하고 모양을 잡아 주는 것은?',
+    options:['세포벽','핵','세포막','세포질'],
+    answer:0,explain:'세포벽은 세포의 가장 바깥에서 보호하고 모양을 잡아 줘요.'})}
+]},
+{id:'root',title:'뿌리 마을',icon:'🌱',col:COLORS.root,desc:'흡수·지지·저장',pages:[
+  {head:'뿌리는 무슨 일을 할까?',build:introBuilder({emoji:'🌱',
+    ask:'땅속에 숨은 <span style="color:var(--root)">뿌리</span>는 무슨 일을 할까요?',
+    lead:'뿌리는 흡수·지지·저장의 세 가지 일을 해요. 눈에 보이지 않는 부분을 직접 조작하며 하나씩 확인해 봐요.'})},
+  {head:'① 흡수 작용',gate:true,build:rootAbsorbBuilder()},
+  {head:'② 지지 작용',gate:true,build:rootSupportSim},
+  {head:'③ 저장 작용',gate:true,build:rootStoreSim},
+  {head:'뿌리의 생김새',gate:true,build:rootShape},
+  {head:'확인 퀴즈',gate:true,build:quizBuilder({intro:'뿌리에 대해 배운 내용을 확인해요.',
+    q:'뿌리가 하는 일이 <b>아닌</b> 것은?',
+    options:['땅속의 물과 양분을 흡수한다','식물이 쓰러지지 않게 지지한다','꽃가루받이로 씨를 만든다','양분을 저장하기도 한다'],
+    answer:2,explain:'씨를 만드는 일은 ‘꽃’이 해요. 뿌리는 흡수·지지·저장을 맡아요.'})}
+]},
+{id:'stem',title:'줄기 마을',icon:'🎋',col:COLORS.stem,desc:'물이 지나는 길',pages:[
+  {head:'물은 어떻게 잎까지 갈까?',build:introBuilder({emoji:'🎋',
+    ask:'뿌리가 빨아들인 물은 <span style="color:var(--stem)">어떻게 잎까지</span> 올라갈까요?',
+    lead:'줄기 속에는 물이 지나가는 통로 ‘물관’이 숨어 있어요. 물이 위로 이동하는 과정을 직접 따라가 보고, 여러 가지 줄기 모습도 알아봐요.'})},
+  {head:'물의 이동 따라가기',gate:true,build:waterSimBuilder({
+    showSun:false, showStomata:false,
+    checks:[{id:'water',label:'흙에 물을 주었어요'},{id:'absorb',label:'뿌리가 물을 흡수해요'},{id:'reach',label:'물관을 따라 잎까지 이동해요'}],
+    simpleHint:'아래 흙을 톡톡 눌러 물을 주세요. 물이 어디로 가는지 보세요!',
+    intro:[
+      {art:'🌧️',title:'1단계 · 뿌리가 흡수',body:'뿌리는 땅속의 물을 빨아들여요. 화면 아래 <b>흙을 눌러</b> 물을 주면 뿌리가 물을 흡수해요.'},
+      {art:'🛗',title:'2단계 · 물관을 따라 위로',body:'흡수한 물은 줄기 속 가느다란 통로인 <b>물관</b>을 따라 위로 올라가요. 가운데 밝은 길이 물관이에요.'},
+      {art:'🍃',title:'3단계 · 잎까지 도착',body:'물은 줄기를 지나 잎까지 도착해요. 끊기지 않고 쭉 이어져 이동한다는 점을 관찰해 보세요!'}
+    ]})},
+  {head:'줄기의 여러 가지 모습',gate:true,build:stemTypes},
+  {head:'확인 퀴즈',gate:true,build:quizBuilder({intro:'줄기에 대해 배운 내용을 확인해요.',
+    q:'붉은 색소 물에 담근 줄기를 잘랐더니 붉게 물든 부분이 있었어요. 이 부분은?',
+    options:['물이 이동하는 통로(물관)','양분을 저장하는 곳','꽃가루가 모이는 곳','잎을 보호하는 껍질'],
+    answer:0,explain:'붉게 물든 통로가 바로 물이 이동하는 물관이에요.'})}
+]},
+{id:'leaf',title:'잎 마을',icon:'🍃',col:COLORS.leaf,desc:'양분을 만드는 공장',pages:[
+  {head:'잎이 양분을 만든다고?',build:introBuilder({emoji:'🍃',
+    ask:'잎은 스스로 <span style="color:var(--leaf)">양분</span>을 만든대요. 정말일까요?',
+    lead:'잎은 빛을 받아 양분을 만드는 곳이에요. 잎의 구조를 살펴보고, 줄기에서 물이 올라와 광합성이 일어나고 양분이 이동하는 모습을 관찰해 봐요.'})},
+  {head:'잎의 구조',gate:true,build:leafStructure},
+  {head:'광합성 알아보기',gate:true,build:photoBuilder()},
+  {head:'확인 퀴즈',gate:true,build:quizBuilder({intro:'광합성에 대해 배운 내용을 확인해요.',
+    q:'잎이 광합성을 할 때 꼭 필요한 재료가 <b>아닌</b> 것은?',
+    options:['빛','물','이산화 탄소','흙(모래)'],
+    answer:3,explain:'광합성에는 빛·물·이산화 탄소가 필요해요. 흙은 직접 쓰이지 않아요.'})}
+]},
+{id:'trans',title:'증산 마을',icon:'💧',col:COLORS.trans,desc:'잎으로 나가는 물',pages:[
+  {head:'잎에 온 물은 어디로?',build:introBuilder({emoji:'💧',
+    ask:'잎까지 올라온 물은 <span style="color:var(--trans)">어떻게</span> 될까요?',
+    lead:'잎에는 아주 작은 구멍 ‘기공’이 있어요. 먼저 물이 잎에서 빠져나가는 모습을 관찰한 뒤, 기공과 증산 작용을 자세히 알아봐요.'})},
+  {head:'증산 작용 관찰',gate:true,build:transBuilder()},
+  {head:'기공과 증산 작용',gate:true,build:stomataInfo},
+  {head:'확인 퀴즈',gate:true,build:quizBuilder({intro:'증산 작용에 대해 배운 내용을 확인해요.',
+    q:'잎의 기공으로 물이 수증기가 되어 빠져나가는 것을 무엇이라고 할까요?',
+    options:['광합성','증산 작용','꽃가루받이','흡수 작용'],
+    answer:1,explain:'잎의 기공을 통해 물이 수증기로 나가는 것을 증산 작용이라고 해요.'})}
+]},
+{id:'flower',title:'꽃 마을',icon:'🌸',col:COLORS.flower,desc:'씨를 만드는 곳',pages:[
+  {head:'꽃은 무슨 일을 할까?',build:introBuilder({emoji:'🌸',
+    ask:'꽃은 예쁘기만 한 게 아니에요. <span style="color:var(--flower)">무슨 일</span>을 할까요?',
+    lead:'꽃은 씨를 만들어 식물을 퍼뜨려요. 꽃의 구조를 살펴보고, 꽃가루받이를 거쳐 열매가 되는 과정을 단계별로 알아봐요.'})},
+  {head:'꽃 구조 이름표 붙이기',gate:true,build:flowerParts},
+  {head:'꽃가루받이와 열매 맺기',gate:true,build:flowerToFruit},
+  {head:'확인 퀴즈',gate:true,build:quizBuilder({intro:'꽃에 대해 배운 내용을 확인해요.',
+    q:'꽃가루받이를 거쳐 자라서 씨를 품는 <b>열매</b>가 되는 부분은?',
+    options:['씨방','꽃잎','꽃받침','잎'],answer:0,explain:'꽃가루받이·수정 뒤 씨방이 자라 열매가 되고, 그 속에 씨가 들어 있어요.'})}
+]},
+{id:'whole',title:'연결 마을',icon:'🌳',col:COLORS.whole,desc:'모두 이어져 있어요',pages:[
+  {head:'기관들은 연결되어 있어요',build:introBuilder({emoji:'🌳',
+    ask:'뿌리·줄기·잎·꽃은 <span style="color:var(--whole2)">따로따로</span> 일할까요?',
+    lead:'식물의 각 기관은 하나로 연결되어 함께 일해요. 날씨와 기공을 바꿔 보며 물의 전체 흐름을 확인해 봐요.'})},
+  {head:'식물 전체 시뮬레이션',gate:true,build:waterSimBuilder({
+    showSun:true, showStomata:true,
+    checks:[{id:'absorb',label:'뿌리가 물을 흡수해요'},{id:'reach',label:'물관을 따라 잎까지 이동해요'},
+      {id:'transp',label:'잎의 기공으로 증산해요'},{id:'stoma',label:'기공을 닫으면 이동이 멈춰요'}],
+    simpleHint:'날씨·기공을 바꿔 보며 물의 속도가 어떻게 변하는지 보세요.',
+    intro:[
+      {art:'🔁',title:'하나로 이어진 흐름',body:'뿌리(흡수) → 줄기(이동) → 잎(증산)이 <b>하나로 연결</b>되어 물이 끊임없이 흘러요.'},
+      {art:'☀️',title:'날씨의 역할',body:'맑은 날에는 잎의 <b>증산</b>이 활발해져 물을 위로 끌어올리는 힘이 커져요. <b>흐린 날</b>로 바꿔 비교해 보세요.'},
+      {art:'🌿',title:'기공의 역할',body:'잎의 <b>기공</b>을 닫으면 증산이 멈추고 물의 이동도 거의 멈춰요. 직접 열고 닫아 확인해요!'}
+    ]})},
+  {head:'종합 정리 퀴즈',gate:true,build:quizBuilder({intro:'식물 전체의 흐름을 떠올려 봐요.',
+    q:'물이 식물 안에서 이동하는 순서로 <b>알맞은</b> 것은?',
+    options:['뿌리 → 줄기 → 잎(증산)','잎 → 꽃 → 뿌리','꽃 → 줄기 → 뿌리','줄기 → 뿌리 → 잎'],
+    answer:0,explain:'뿌리에서 흡수한 물이 줄기를 지나 잎에 도착하고, 증산으로 빠져나가요.'})},
+  {head:'식물 관찰 노트 정리 (JPG 저장)',gate:true,build:noteActivity},
+  {head:'학습 완료!',build:finalReward}
+]}
+];
+
+/* =========================================================================
+   비-캔버스 보조 활동들
+   ========================================================================= */
+/* 공용: 이름표 붙이기 활동 */
+function labelActivity(body,t,done,opts){
+  const col=t.col.c;
+  body.innerHTML=`<div class="simwrap">
+    <div class="panel" style="flex:0 0 auto; width:430px; padding:8px; display:flex; align-items:center; justify-content:center;">${opts.svg}</div>
+    <div class="simside">
+      <div style="font-size:23px;font-weight:700;color:var(--ink)">${opts.intro}</div>
+      <div id="labels" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
+      <div class="fbk good" id="ff" style="min-height:24px"></div>
+      <div class="panel" style="padding:7px 12px; flex:1;">
+        <div class="check" id="check">${opts.parts.map(p=>`<div class="ck" data-ck="${p.id}"><span class="box">○</span><span>${p.label}</span></div>`).join('')}</div>
+      </div>
+      <button class="navbtn sm ghost" id="guide">📖 차근차근 알아보기</button>
+    </div></div>`;
+  const lab=body.querySelector('#labels'); let sel=null, placed=0;
+  [...opts.parts].sort(()=>Math.random()-.5).forEach(p=>{const b=document.createElement('button');
+    b.className='tag'; b.style.cursor='pointer'; b.textContent=p.label; b.dataset.id=p.id;
+    b.onclick=()=>{lab.querySelectorAll('.tag').forEach(x=>x.style.outline=''); sel=b; b.style.outline='3px solid '+col;};
+    lab.appendChild(b);});
+  body.querySelectorAll('.slot').forEach(s=>s.onclick=()=>{ if(!sel||s.dataset.done)return;
+    const fb=body.querySelector('#ff');
+    if(sel.dataset.id===s.dataset.id){ s.dataset.done=1; s.setAttribute('fill','#fff'); s.setAttribute('stroke-dasharray','');
+      const tx=body.querySelector(`text.slotxt[data-id="${s.dataset.id}"]`); if(tx)tx.textContent=sel.textContent;
+      const p=opts.parts.find(x=>x.id===s.dataset.id); fb.className='fbk good'; fb.innerHTML=`✅ <b>${p.label}</b>: ${p.desc}`;
+      tick(body,s.dataset.id); sel.remove(); sel=null; placed++;
+      if(placed===opts.parts.length){fb.innerHTML='🎉 모두 찾았어요!'; done();}
+    }else{fb.className='fbk bad'; fb.textContent='그 자리가 아니에요. 다시 살펴볼까요?'; s.animate([{r:14},{r:18},{r:14}],{duration:250});}});
+  const gb=body.querySelector('#guide');
+  if(opts.guide){ gb.onclick=()=>openModal(opts.guide,{color:col});
+    const k='guide-'+t.id+'-'+state.pi; if(!state.seen[k]){state.seen[k]=1; delay(()=>openModal(opts.guide,{color:col}),350);} }
+  else gb.style.display='none';
+}
+
+/* 공용: 카드 눌러 알아보기 (선택형 학습) */
+function revealActivity(body,t,done,opts){
+  const col=t.col.c;
+  body.innerHTML=`<div style="font-size:22px;font-weight:700;color:var(--ink);margin-bottom:6px;text-align:center">${opts.intro}</div>
+    ${opts.header?`<div style="display:flex; justify-content:center; margin-bottom:6px;">${opts.header}</div>`:''}
+    <div style="flex:1; display:flex; gap:12px; min-height:0;">
+      ${opts.cards.map((c,i)=>`<div class="rvcard panel" data-i="${i}" style="flex:1; cursor:pointer; padding:10px; display:flex; flex-direction:column; align-items:center; gap:6px; text-align:center; transition:.2s; overflow:hidden;">
+        <div style="height:84px; display:flex; align-items:center; justify-content:center; font-size:44px">${c.art||''}</div>
+        <div style="font-family:'Jua'; font-size:21px; color:${col}">${c.title}</div>
+        <div class="rvsub" style="font-size:16px; font-weight:700; color:var(--ink); opacity:0; transition:.3s; flex:1">${c.sub}</div>
+        <div class="rvtick" style="font-size:17px; font-weight:700; color:var(--ink-soft)">👆 눌러보기</div>
+      </div>`).join('')}
+    </div>`;
+  let n=0;
+  body.querySelectorAll('.rvcard').forEach(c=>c.onclick=()=>{ if(c.dataset.on)return; c.dataset.on=1;
+    c.querySelector('.rvsub').style.opacity=1; c.querySelector('.rvtick').textContent='✅ 확인!';
+    c.style.background='#fff7ec'; n++; if(n===opts.cards.length)done();});
+  if(opts.guide){const k='guide-'+t.id+'-'+state.pi; if(!state.seen[k]){state.seen[k]=1; delay(()=>openModal(opts.guide,{color:col}),350);}}
+}
+
+/* 줄기의 여러 가지 모습 */
+function stemTypes(body,t,done){
+  const col=t.col.c;
+  const erect=`<svg viewBox="0 0 84 100"><rect x="39" y="40" width="6" height="56" fill="#62a73d"/><ellipse cx="22" cy="60" rx="14" ry="6" fill="#4fae6d"/><ellipse cx="62" cy="68" rx="14" ry="6" fill="#4fae6d"/>${[0,1,2,3,4,5,6,7].map(k=>{const a=k/8*6.283;return `<ellipse cx="${(42+Math.cos(a)*16).toFixed(1)}" cy="${(26+Math.sin(a)*16).toFixed(1)}" rx="7" ry="3.5" fill="#f5c518" transform="rotate(${(a*57.3).toFixed(0)} ${(42+Math.cos(a)*16).toFixed(1)} ${(26+Math.sin(a)*16).toFixed(1)})"/>`;}).join('')}<circle cx="42" cy="26" r="10" fill="#8a5a2b"/></svg>`;
+  const tuber=`<svg viewBox="0 0 84 100"><rect x="0" y="46" width="84" height="3" fill="#7a5230"/><rect x="40" y="14" width="5" height="32" fill="#62a73d"/><ellipse cx="28" cy="20" rx="12" ry="5" fill="#4fae6d"/><ellipse cx="56" cy="24" rx="12" ry="5" fill="#4fae6d"/><path d="M42 46 Q34 56 30 64" stroke="#b07a3e" stroke-width="2.5" fill="none"/><path d="M42 46 Q52 62 60 72" stroke="#b07a3e" stroke-width="2.5" fill="none"/><ellipse cx="30" cy="68" rx="15" ry="11" fill="#c98a4a" stroke="#a06a31" stroke-width="2"/><ellipse cx="62" cy="78" rx="13" ry="9" fill="#c98a4a" stroke="#a06a31" stroke-width="2"/><circle cx="26" cy="66" r="1.6" fill="#7a5230"/><circle cx="34" cy="71" r="1.6" fill="#7a5230"/></svg>`;
+  const twine=`<svg viewBox="0 0 84 100"><rect x="40" y="6" width="5" height="90" fill="#b0884a"/><path d="M42 92 Q22 82 42 72 Q62 62 42 52 Q22 42 42 32 Q62 22 42 12" stroke="#62a73d" stroke-width="4" fill="none"/><path d="M52 26 Q70 18 64 36 Q56 40 52 26 Z" fill="#a07ad8"/><circle cx="61" cy="30" r="3" fill="#6f4fb0"/></svg>`;
+  const creep=`<svg viewBox="0 0 84 100"><rect x="0" y="70" width="84" height="3" fill="#7a5230"/><path d="M6 68 Q26 56 46 68 Q62 76 78 64" stroke="#62a73d" stroke-width="4" fill="none"/><ellipse cx="24" cy="58" rx="9" ry="4" fill="#4fae6d"/><ellipse cx="50" cy="60" rx="9" ry="4" fill="#4fae6d"/><path d="M70 60 l4 8 -8 0 z" fill="#e0603a"/><circle cx="70" cy="63" r="5" fill="#e0603a"/></svg>`;
+  const cards=[
+    {svg:erect,title:'곧은 줄기',sub:'줄기가 위로 곧게 자라요.',ex:'예) 해바라기, 나무'},
+    {svg:tuber,title:'덩이 줄기',sub:'양분을 저장해 굵어진 땅속 줄기예요.',ex:'예) 감자'},
+    {svg:twine,title:'감는 줄기',sub:'다른 물체를 감으며 올라가요.',ex:'예) 나팔꽃'},
+    {svg:creep,title:'기는 줄기',sub:'땅 위를 기듯이 뻗어 자라요.',ex:'예) 딸기, 고구마'}
+  ];
+  const seen=new Set();
+  function showGrid(){
+    body.innerHTML=`<div style="font-size:21px;font-weight:700;color:var(--ink);text-align:center;margin-bottom:6px">🎋 줄기는 식물마다 모습이 달라요. 카드를 누르면 한 장씩 크게 볼 수 있어요. 모두 눌러 확인해요.</div>
+      <div style="flex:1; display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; gap:10px; min-height:0;">
+        ${cards.map((c,i)=>`<div class="rvcard panel" data-i="${i}" style="cursor:pointer; padding:8px 12px; display:flex; align-items:center; gap:12px; overflow:hidden; transition:.15s; ${seen.has(i)?'background:#fff7ec;':''}">
+          <div style="flex:0 0 auto; width:84px; height:100px;">${c.svg}</div>
+          <div style="flex:1; text-align:left; min-width:0;">
+            <div style="font-family:'Jua'; font-size:23px; color:${col}">${c.title} <span style="font-size:16px; color:var(--ink-soft)">${seen.has(i)?'✅':'👆'}</span></div>
+            <div style="font-size:18px; font-weight:700; color:var(--ink); margin-top:3px">${c.sub}</div>
+            <div style="font-size:16px; font-weight:700; color:var(--ink-soft); margin-top:3px">${c.ex}</div>
+          </div>
+        </div>`).join('')}
+      </div>`;
+    body.querySelectorAll('.rvcard').forEach(c=>c.onclick=()=>showOne(+c.dataset.i));
+  }
+  function showOne(i){
+    const c=cards[i]; seen.add(i);
+    body.innerHTML=`<div class="panel" style="height:100%; display:flex; flex-direction:column; align-items:center; gap:8px; text-align:center; padding:12px; box-sizing:border-box;">
+      <div style="flex:1; min-height:0; width:100%; display:flex; align-items:center; justify-content:center;">
+        <div style="height:100%; max-height:190px; aspect-ratio:84/100;">${c.svg.replace('<svg ','<svg style="width:100%;height:100%" ')}</div>
+      </div>
+      <div style="font-family:'Jua'; font-size:34px; color:${col}; flex:0 0 auto;">${c.title}</div>
+      <div style="font-size:23px; font-weight:700; color:var(--ink); flex:0 0 auto;">${c.sub}</div>
+      <div style="font-size:20px; font-weight:700; color:var(--ink-soft); flex:0 0 auto;">${c.ex}</div>
+      <div style="width:100%; display:flex; justify-content:flex-end; flex:0 0 auto;">
+        <button class="navbtn sm" id="back" style="background:${col};">돌아가기 ▶</button>
+      </div>
+    </div>`;
+    body.querySelector('#back').onclick=showGrid;
+    if(seen.size===cards.length)done();
+  }
+  showGrid();
+  const k='guide-'+t.id+'-'+state.pi; if(!state.seen[k]){state.seen[k]=1; delay(()=>openModal([
+    {art:'🎋',title:'줄기의 여러 모습',body:'줄기는 식물마다 모습이 달라요. <b>곧은 줄기·덩이 줄기·감는 줄기·기는 줄기</b> 등이 있어요. 카드를 누르면 한 장씩 크게 볼 수 있어요!'}
+  ],{color:col}),350);}
+}
+
+/* 잎의 구조 — 잎몸/잎자루/잎맥 */
+function leafStructure(body,t,done){
+  const col=t.col.c;
+  const svg=`<svg viewBox="0 0 240 240" style="width:100%; height:100%; max-height:340px">
+    <path d="M120 24 C60 50 52 150 120 196 C188 150 180 50 120 24 Z" fill="#41a86a" stroke="#2c7a4d" stroke-width="3"/>
+    <line x1="120" y1="30" x2="120" y2="194" stroke="#2c7a4d" stroke-width="3"/>
+    ${[60,96,132,168].map(y=>`<line x1="120" y1="${y}" x2="${120-58+(y-60)*0.2}" y2="${y-18}" stroke="#2c7a4d" stroke-width="1.6"/><line x1="120" y1="${y}" x2="${120+58-(y-60)*0.2}" y2="${y-18}" stroke="#2c7a4d" stroke-width="1.6"/>`).join('')}
+    <line x1="120" y1="196" x2="120" y2="226" stroke="#5aa05a" stroke-width="7" stroke-linecap="round"/>
+    <circle class="slot" data-id="blade" cx="80" cy="96" r="15" fill="rgba(255,255,255,.9)" stroke="${col}" stroke-width="2" stroke-dasharray="4 3"/>
+    <text class="slotxt" data-id="blade" x="80" y="101" text-anchor="middle" font-family="Jua" font-size="12" fill="${t.col.d}">?</text>
+    <circle class="slot" data-id="vein" cx="120" cy="120" r="15" fill="rgba(255,255,255,.9)" stroke="${col}" stroke-width="2" stroke-dasharray="4 3"/>
+    <text class="slotxt" data-id="vein" x="120" y="125" text-anchor="middle" font-family="Jua" font-size="12" fill="${t.col.d}">?</text>
+    <circle class="slot" data-id="petiole" cx="120" cy="214" r="15" fill="rgba(255,255,255,.9)" stroke="${col}" stroke-width="2" stroke-dasharray="4 3"/>
+    <text class="slotxt" data-id="petiole" x="120" y="219" text-anchor="middle" font-family="Jua" font-size="12" fill="${t.col.d}">?</text>
+  </svg>`;
+  labelActivity(body,t,done,{intro:'🏷️ 이름표를 누른 뒤, 잎에서 알맞은 부분을 누르세요.', svg, color:col, parts:[
+    {id:'blade',label:'잎몸',desc:'잎의 넓고 납작한 부분이에요. 여기서 광합성이 일어나요.'},
+    {id:'vein',label:'잎맥',desc:'잎몸에 뻗은 선으로, 물과 양분이 지나는 통로예요.'},
+    {id:'petiole',label:'잎자루',desc:'잎몸과 줄기를 이어 주는 부분이에요.'}
+  ], guide:[
+    {art:'🍃',title:'잎의 구조',body:'잎은 넓적한 <b>잎몸</b>, 선처럼 뻗은 <b>잎맥</b>, 줄기와 잇는 <b>잎자루</b>로 이루어져요.'},
+    {art:'🟢',title:'잎은 왜 초록색일까요?',body:'잎에는 <b>엽록체(엽록소)</b>가 많아서 대부분 <b>초록색</b>으로 보여요. 엽록체가 햇빛을 받아 광합성을 해요.'}
+  ]});
+}
+
+/* 기공과 증산 작용 — 공변세포 그림 + 카드 넘기기 */
+function stomataInfo(body,t,done){
+  const col=t.col.c;
+  // 공변세포 둘레에 육각형 식물 세포들 (벌집 모양 타일)
+  function hex(cx,cy,r){const p=[];for(let k=0;k<6;k++){const a=Math.PI/6+k*Math.PI/3; p.push(`${(cx+Math.cos(a)*r).toFixed(1)},${(cy+Math.sin(a)*r).toFixed(1)}`);}return `<polygon points="${p.join(' ')}" fill="#cfe9d5" stroke="#7bbf8c" stroke-width="2"/>`;}
+  const hexes=(()=>{ let s=''; const r=27, dx=r*1.732, dy=r*1.5;
+    let ri=0; for(let y=24; y<=232; y+=dy){ const x0=(ri%2?dx/2:0)+6; for(let x=x0; x<=216; x+=dx){ s+=hex(x,y,r); } ri++; }
+    return s; })();
+  const stoma=`<svg viewBox="0 0 220 240" style="width:100%; height:100%; max-height:330px">
+    <rect x="0" y="0" width="220" height="240" rx="14" fill="#eaf6ec"/>
+    ${hexes}
+    <circle cx="110" cy="120" r="46" fill="#eaf6ec"/>
+    <ellipse cx="92" cy="120" rx="20" ry="50" fill="#7fc98a" stroke="#2f7a4f" stroke-width="3"/>
+    <ellipse cx="128" cy="120" rx="20" ry="50" fill="#7fc98a" stroke="#2f7a4f" stroke-width="3"/>
+    <ellipse cx="110" cy="120" rx="12" ry="36" fill="#21402f"/>
+    <line x1="92" y1="74" x2="78" y2="52" stroke="#2f7a4f" stroke-width="1.5"/>
+    <line x1="128" y1="74" x2="142" y2="52" stroke="#2f7a4f" stroke-width="1.5"/>
+    <text x="110" y="46" text-anchor="middle" font-family="Jua" font-size="17" fill="#1f5e3a">공변세포</text>
+    <line x1="110" y1="158" x2="110" y2="196" stroke="#21402f" stroke-width="1.5"/>
+    <text x="110" y="214" text-anchor="middle" font-family="Jua" font-size="17" fill="#21402f">기공(구멍)</text>
+  </svg>`;
+  const cards=[
+    {art:'💨',title:'증산 작용이란?',sub:'잎의 기공으로 물이 수증기가 되어 빠져나가는 것을 증산 작용이라고 해요.'},
+    {art:'⬆️',title:'물 끌어올리기',sub:'잎에서 물이 빠져나가면 그 힘으로 뿌리의 물을 줄기 위로 끌어올려요.'},
+    {art:'🌡️',title:'온도 낮추기',sub:'물이 증발하면서 더운 날 식물의 온도를 시원하게 낮춰 줘요.'}
+  ];
+  let i=0;
+  body.innerHTML=`<div class="simwrap">
+    <div class="panel" style="flex:0 0 auto; width:300px; padding:8px; display:flex; align-items:center; justify-content:center;">${stoma}</div>
+    <div class="simside">
+      <div id="dots"></div>
+      <div id="cardbox" style="flex:1; display:flex; flex-direction:column; justify-content:center;"></div>
+      <div class="fbk good" id="sdone" style="min-height:24px"></div>
+      <button class="navbtn sm" id="snext" style="background:${col}">다음 ▶</button>
+    </div></div>`;
+  function render(){
+    const box=body.querySelector('#cardbox');
+    const last=i===cards.length;
+    body.querySelector('#dots').innerHTML=[...Array(cards.length+1)].map((_,k)=>`<i style="width:11px;height:11px;border-radius:50%;display:inline-block;margin-right:6px;background:${k<=i?col:'#e2cfa6'}"></i>`).join('');
+    if(!last){
+      const c=cards[i];
+      box.innerHTML=`<div class="panel" style="padding:16px 18px; display:flex; flex-direction:column; align-items:center; gap:10px; text-align:center;">
+        <div style="font-size:64px">${c.art}</div>
+        <div style="font-family:'Jua'; font-size:39px; color:${col}; line-height:1.15">${c.title}</div>
+        <div style="font-size:30px; font-weight:700; line-height:1.35; color:var(--ink)">${c.sub}</div></div>`;
+      body.querySelector('#snext').textContent = i===cards.length-1?'정리 보기 ▶':'다음 ▶';
+      body.querySelector('#sdone').textContent='';
+    }else{
+      box.innerHTML=`<div style="font-family:'Jua'; font-size:26px; color:var(--ink); margin-bottom:6px; text-align:center">📌 증산 작용 정리</div>
+        <div style="display:flex; flex-direction:column; gap:8px;">${cards.map(c=>`<div class="panel" style="padding:12px 16px; display:flex; align-items:center; gap:12px; text-align:left;">
+          <span style="font-size:34px">${c.art}</span><span style="font-family:'Jua'; font-size:31px; color:${col}">${c.title}</span></div>`).join('')}</div>`;
+      body.querySelector('#snext').textContent='처음부터 다시 ↺';
+      body.querySelector('#sdone').textContent='🎉 기공과 증산 작용을 모두 살펴봤어요!';
+      done();
+    }
+  }
+  body.querySelector('#snext').onclick=()=>{ i=(i+1)%(cards.length+1); render(); };
+  render();
+}
+
+/* 꽃 → 열매가 되는 과정 (단계별 그림) */
+function flowerToFruit(body,t,done){
+  const col=t.col.c;
+  const steps=[
+    {title:'1단계 · 꽃이 펴요',desc:'꽃이 피면 수술에서 꽃가루를 만들어요.'},
+    {title:'2단계 · 꽃가루받이',desc:'수술의 꽃가루가 암술머리에 옮겨 붙어요. 곤충·바람 등이 도와줘요.'},
+    {title:'3단계 · 수정',desc:'꽃가루가 씨방 속 밑씨와 만나 씨가 만들어지기 시작해요.'},
+    {title:'4단계 · 열매가 돼요',desc:'꽃잎은 시들고 씨방이 자라 열매가 돼요. 그 속에 씨가 들어 있어요.'}
+  ];
+  function svg(i){
+    // 공통: 줄기 + 잎
+    const base=`<line x1="120" y1="150" x2="120" y2="212" stroke="#5aa05a" stroke-width="7" stroke-linecap="round"/>
+      <ellipse cx="98" cy="180" rx="20" ry="9" fill="#4fae6d" transform="rotate(-25 98 180)"/>
+      <ellipse cx="142" cy="190" rx="20" ry="9" fill="#4fae6d" transform="rotate(25 142 190)"/>`;
+    // 꽃잎 (1~3단계: 활짝 → 시들기 직전)
+    const petalColor = i===0?'#f3a8c4' : (i<3?'#efb6cb':'#e7c8d2');
+    const petals = i<3 ? [0,1,2,3,4,5].map(k=>{const a=k/6*6.283; const px=120+Math.cos(a)*30, py=92+Math.sin(a)*30;
+      return `<ellipse cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" rx="20" ry="11" fill="${petalColor}" stroke="#e08bb0" stroke-width="1" transform="rotate(${(a*57.3).toFixed(0)} ${px.toFixed(1)} ${py.toFixed(1)})"/>`;}).join('') : '';
+    // 암술/수술 (1·2단계)
+    const pistil = i<2 ? `<line x1="120" y1="92" x2="120" y2="58" stroke="#cf6f93" stroke-width="3"/><ellipse cx="120" cy="55" rx="8" ry="5" fill="#cf6f93"/>` : '';
+    const stamens = i<2 ? `<line x1="106" y1="96" x2="92" y2="68" stroke="#e8a14b" stroke-width="3"/><circle cx="90" cy="66" r="5" fill="#f5c518"/>
+      <line x1="134" y1="96" x2="148" y2="68" stroke="#e8a14b" stroke-width="3"/><circle cx="150" cy="66" r="5" fill="#f5c518"/>` : '';
+    // 꽃 중심(씨방) / 열매
+    let center;
+    if(i===3){ // 열매 + 씨
+      center=`<ellipse cx="120" cy="104" rx="30" ry="34" fill="#e0603a" stroke="#b94824" stroke-width="2"/>
+        <path d="M120 72 q-9 -9 1 -15 q9 6 -1 15" fill="#5aa05a"/>
+        <ellipse cx="112" cy="100" rx="3.4" ry="5" fill="#fff3d0"/><ellipse cx="128" cy="104" rx="3.4" ry="5" fill="#fff3d0"/><ellipse cx="119" cy="115" rx="3.4" ry="5" fill="#fff3d0"/>`;
+    }else{ // 씨방(초록), 2단계엔 씨앗 점 보이기 시작
+      const seeds = i===2 ? `<circle cx="116" cy="112" r="2.6" fill="#e8b73c"/><circle cx="124" cy="116" r="2.6" fill="#e8b73c"/>` : '';
+      center=`<ellipse cx="120" cy="110" rx="14" ry="18" fill="#cfe8d2" stroke="#9cc6a6" stroke-width="2"/>${seeds}`;
+    }
+    // 꽃가루받이(2단계): 곤충이 꽃가루를 암술로
+    const pollen = i===1 ? `<path d="M168 76 Q146 52 124 60" stroke="#d8a93b" stroke-width="2" fill="none" stroke-dasharray="3 3"/>
+      <circle cx="150" cy="62" r="3.2" fill="#f5c518"/><circle cx="138" cy="58" r="3.2" fill="#f5c518"/>
+      <text x="176" y="80" font-size="22">🐝</text>` : '';
+    // 수정(3단계): 꽃가루관이 씨방 속으로
+    const fert = i===2 ? `<path d="M120 70 L120 104" stroke="#d8a93b" stroke-width="2" stroke-dasharray="3 3"/>` : '';
+    return `<svg viewBox="0 0 240 220" style="width:100%; height:100%; max-height:330px">
+      ${base}${petals}${center}${pistil}${stamens}${pollen}${fert}</svg>`;
+  }
+  let i=0;
+  body.innerHTML=`<div class="simwrap">
+    <div class="panel" id="fstage" style="flex:0 0 auto; width:380px; padding:8px; display:flex; align-items:center; justify-content:center;"></div>
+    <div class="simside">
+      <div id="dots"></div>
+      <div class="panel" style="flex:1; display:flex; flex-direction:column; justify-content:center; gap:10px; padding:16px 18px; text-align:center;">
+        <div style="font-family:'Jua'; font-size:36px; color:${col}; line-height:1.15" id="ftitle"></div>
+        <div style="font-size:28px; font-weight:700; line-height:1.4; color:var(--ink)" id="fdesc"></div>
+      </div>
+      <div class="fbk good" id="fdone" style="min-height:24px"></div>
+      <button class="navbtn sm" id="fnext" style="background:${col}">다음 단계 ▶</button>
+    </div></div>`;
+  function render(){
+    body.querySelector('#fstage').innerHTML=svg(i);
+    body.querySelector('#ftitle').textContent=steps[i].title;
+    body.querySelector('#fdesc').textContent=steps[i].desc;
+    body.querySelector('#dots').innerHTML=steps.map((_,k)=>`<i style="width:11px;height:11px;border-radius:50%;display:inline-block;margin-right:6px;background:${k<=i?col:'#e2cfa6'}"></i>`).join('');
+    const last=i===steps.length-1;
+    body.querySelector('#fnext').textContent=last?'처음부터 다시 ↺':'다음 단계 ▶';
+    body.querySelector('#fdone').textContent=last?'🎉 꽃이 열매가 되는 과정을 모두 살펴봤어요!':'';
+    if(last)done();
+  }
+  body.querySelector('#fnext').onclick=()=>{ i=(i+1)%steps.length; render(); };
+  render();
+}
+
+/* 식물 세포의 구조 — 이름표 */
+function cellParts(body,t,done){
+  const col=t.col.c;
+  const svg=`<svg viewBox="0 0 260 250" style="width:100%; height:100%; max-height:340px">
+    <polygon points="78,45 182,45 234,125 182,205 78,205 26,125" fill="#bfe6dd" stroke="#359384" stroke-width="5"/>
+    <polygon points="88,61 172,61 214,125 172,189 88,189 46,125" fill="#eafaf6" stroke="#69c3d6" stroke-width="3"/>
+    <ellipse cx="96" cy="92" rx="15" ry="9" fill="#7fc98a" transform="rotate(-20 96 92)"/>
+    <ellipse cx="172" cy="158" rx="15" ry="9" fill="#7fc98a" transform="rotate(25 172 158)"/>
+    <ellipse cx="166" cy="98" rx="15" ry="9" fill="#7fc98a" transform="rotate(12 166 98)"/>
+    <circle cx="130" cy="128" r="24" fill="#f3c969" stroke="#d8a93b" stroke-width="3"/>
+    <circle class="slot" data-id="wall" cx="130" cy="50" r="15" fill="rgba(255,255,255,.85)" stroke="${col}" stroke-width="2" stroke-dasharray="4 3"/>
+    <text class="slotxt" data-id="wall" x="130" y="55" text-anchor="middle" font-family="Jua" font-size="12" fill="${t.col.d}">?</text>
+    <circle class="slot" data-id="mem" cx="205" cy="125" r="15" fill="rgba(255,255,255,.85)" stroke="${col}" stroke-width="2" stroke-dasharray="4 3"/>
+    <text class="slotxt" data-id="mem" x="205" y="130" text-anchor="middle" font-family="Jua" font-size="12" fill="${t.col.d}">?</text>
+    <circle class="slot" data-id="nuc" cx="130" cy="128" r="15" fill="rgba(255,255,255,.85)" stroke="${col}" stroke-width="2" stroke-dasharray="4 3"/>
+    <text class="slotxt" data-id="nuc" x="130" y="133" text-anchor="middle" font-family="Jua" font-size="12" fill="${t.col.d}">?</text>
+    <circle class="slot" data-id="cyto" cx="92" cy="160" r="15" fill="rgba(255,255,255,.85)" stroke="${col}" stroke-width="2" stroke-dasharray="4 3"/>
+    <text class="slotxt" data-id="cyto" x="92" y="165" text-anchor="middle" font-family="Jua" font-size="12" fill="${t.col.d}">?</text>
+  </svg>`;
+  labelActivity(body,t,done,{intro:'🏷️ 이름표를 누른 뒤, 세포에서 알맞은 자리를 누르세요.', svg, color:col, parts:[
+    {id:'wall',label:'세포벽',desc:'가장 바깥에서 세포를 단단히 보호하고 모양을 잡아요. (식물에만 있음)'},
+    {id:'mem',label:'세포막',desc:'세포 안과 밖을 나누고, 드나드는 물질을 조절해요.'},
+    {id:'nuc',label:'핵',desc:'세포의 중심으로 생명 활동을 조절해요.'},
+    {id:'cyto',label:'세포질',desc:'핵을 뺀 나머지 부분으로, 여러 작용이 일어나요.'}
+  ], guide:[
+    {art:'🔬',title:'세포란?',body:'모든 생물의 몸은 <b>세포</b>로 이루어져요. 세포는 생물을 이루는 <b>가장 작은 단위</b>예요.'},
+    {art:'🧩',title:'식물 세포의 구조',body:'식물 세포는 <b>세포벽·세포막·핵·세포질</b>로 이루어져요. 이름표를 알맞은 자리에 붙여 보세요!'}
+  ]});
+}
+
+/* 지지 작용 — 바람 vs 뿌리 (조작) */
+function rootSupportSim(body,t,done){
+  const col=t.col.c;
+  body.innerHTML=`<div class="simwrap"><div id="cvHolder"></div>
+    <div class="simside">
+      <div class="softpill">💨 바람 세기: <b id="wv">0</b></div>
+      <input id="wind" type="range" min="0" max="100" value="0" style="width:100%; accent-color:${col}">
+      <div class="softpill">🌱 뿌리 튼튼함: <b id="rv">3</b></div>
+      <input id="rstr" type="range" min="1" max="10" value="3" style="width:100%; accent-color:${col}">
+      <div class="panel" style="padding:7px 12px; flex:1; display:flex; flex-direction:column; gap:5px;">
+        <div style="font-family:'Jua'; color:var(--ink); font-size:22px">🔎 단계별 확인</div>
+        <div class="check" id="check">
+          <div class="ck" data-ck="wind"><span class="box">○</span><span>바람을 세게 불게 했어요</span></div>
+          <div class="ck" data-ck="fall"><span class="box">○</span><span>뿌리가 약하면 쓰러져요</span></div>
+          <div class="ck" data-ck="hold"><span class="box">○</span><span>뿌리가 튼튼하면 버텨요</span></div>
+        </div>
+        <div class="hintline" id="hint">바람을 세게 한 뒤, 뿌리 튼튼함을 약하게·강하게 바꿔 보세요.</div>
+      </div>
+      <button class="navbtn sm ghost" id="guide">📖 차근차근 알아보기</button>
+    </div></div>`;
+  const cv=mkCanvas(document.getElementById('cvHolder'),540,360);
+  const ctx=cv.ctx,W=cv.w,H=cv.h, cx=W/2, soilY=232;
+  const root=genRoot(cx,soilY,H-soilY-8,150,21);
+  let wind=0, rstr=3, theta=0, frame=0;
+  const ws=document.getElementById('wind'), rs=document.getElementById('rstr');
+  ws.oninput=()=>{wind=+ws.value; document.getElementById('wv').textContent=wind; if(wind>0)tick(body,'wind'); chk();};
+  rs.oninput=()=>{rstr=+rs.value; document.getElementById('rv').textContent=rstr; chk();};
+  document.getElementById('guide').onclick=guide;
+  function guide(){openModal([
+    {art:'⚓',title:'뿌리는 식물을 붙잡아요',body:'뿌리는 땅속으로 단단히 뻗어 식물이 <b>쓰러지지 않게 지지</b>해요. 눈에 보이지 않는 이 힘을 비교해 봐요.'},
+    {art:'💨',title:'직접 해 보기',body:'<b>바람</b>을 세게 하고 <b>뿌리 튼튼함</b>을 바꿔 보세요. 뿌리가 약하면 쉽게 기울어 쓰러지고, 튼튼하면 버텨요!'}
+  ],{color:col});}
+  function chk(){if(allTicked(body)){document.getElementById('hint').textContent='👍 모든 단계 확인! ‘다음’으로 넘어가요.'; done();}}
+  function drawLeaf(x,y,dir,s){ctx.fillStyle='#4fae6d'; ctx.beginPath(); ctx.ellipse(x,y,24*s,11*s,dir*0.5,0,7); ctx.fill();}
+  loop(()=>{ frame++;
+    const target=(wind/100)*(1-rstr/10)*1.25;
+    theta += (target-theta)*0.08 + (wind>0?Math.sin(frame*0.25)*0.006*(wind/100):0);
+    if(theta<0)theta=0;
+    if(wind>=60 && rstr<=3 && theta>0.55) tick(body,'fall');
+    if(wind>=60 && rstr>=8 && theta<0.3) tick(body,'hold');
+    chk();
+    // draw
+    ctx.clearRect(0,0,W,H);
+    const sky=ctx.createLinearGradient(0,0,0,soilY); sky.addColorStop(0,'#eaf6ff'); sky.addColorStop(1,'#f1f8ef');
+    ctx.fillStyle=sky; ctx.fillRect(0,0,W,soilY);
+    ctx.fillStyle='#7a5230'; ctx.fillRect(0,soilY,W,H-soilY);
+    ctx.fillStyle='#6c4626'; for(let x=0;x<W;x+=24)ctx.fillRect(x,soilY+3,11,3);
+    // wind streaks
+    if(wind>0){ctx.strokeStyle='rgba(120,170,210,.5)'; ctx.lineWidth=2;
+      const n=Math.round(wind/100*6); for(let i=0;i<n;i++){const yy=40+i*26, off=(frame*3+i*40)%160;
+        ctx.beginPath(); ctx.moveTo(off-40,yy); ctx.lineTo(off+10,yy); ctx.stroke();}
+      ctx.font='24px serif'; ctx.fillText('💨',14,soilY-20);}
+    // roots (튼튼할수록 깊고 넓게)
+    ctx.save(); ctx.translate(cx,soilY); ctx.scale(0.7+rstr/10*0.5,0.5+rstr/10*0.8); ctx.translate(-cx,-soilY);
+    drawRoot(ctx,root,'#9c6a34','#c79a63',Math.round(rstr*6)); ctx.restore();
+    // plant (기울어짐)
+    ctx.save(); ctx.translate(cx,soilY); ctx.rotate(theta);
+    ctx.strokeStyle='#62a73d'; ctx.lineCap='round'; ctx.lineWidth=12; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(0,-120); ctx.stroke(); ctx.lineCap='butt';
+    drawLeaf(-26,-118,-1,1); drawLeaf(26,-118,1,1); drawLeaf(-22,-86,-1,0.85); drawLeaf(22,-86,1,0.85);
+    ctx.restore();
+    // 상태 표시
+    ctx.font='bold 20px Noto Sans KR'; ctx.textAlign='center';
+    if(theta>0.95){ctx.fillStyle='#d3603a'; ctx.fillText('쓰러졌어요! 🌪️',cx,40);}
+    else if(wind>=60 && theta<0.3){ctx.fillStyle='#1f9d57'; ctx.fillText('튼튼하게 버텨요! 💪',cx,40);}
+    ctx.textAlign='left';
+  });
+  const k='guide-'+t.id+'-'+state.pi; if(!state.seen[k]){state.seen[k]=1; delay(guide,350);}
+}
+
+/* 저장 작용 — 잎이 만든 양분을 뿌리에 저장 (조작) */
+function rootStoreSim(body,t,done){
+  const col=t.col.c;
+  body.innerHTML=`<div class="simwrap"><div id="cvHolder"></div>
+    <div class="simside">
+      <div class="controls"><button class="toggle on" id="sunT">☀️ 날씨: 맑음</button></div>
+      <div class="meter"><div class="m">저장량 <b id="st">0</b></div></div>
+      <div class="panel" style="padding:7px 12px; flex:1; display:flex; flex-direction:column; gap:5px;">
+        <div style="font-family:'Jua'; color:var(--ink); font-size:22px">🔎 단계별 확인</div>
+        <div class="check" id="check">
+          <div class="ck" data-ck="make"><span class="box">○</span><span>맑은 날 잎이 양분을 만들어요</span></div>
+          <div class="ck" data-ck="store"><span class="box">○</span><span>양분이 뿌리에 저장돼요</span></div>
+          <div class="ck" data-ck="fat"><span class="box">○</span><span>저장될수록 뿌리가 굵어져요</span></div>
+        </div>
+        <div class="hintline" id="hint">맑은 날에는 잎이 양분을 만들어 뿌리로 내려보내요. 날씨를 바꿔 보세요.</div>
+      </div>
+      <button class="navbtn sm ghost" id="guide">📖 차근차근 알아보기</button>
+    </div></div>`;
+  const cv=mkCanvas(document.getElementById('cvHolder'),540,360);
+  const ctx=cv.ctx,W=cv.w,H=cv.h, cx=W/2, soilY=150, rootY=soilY+78;
+  let sun=true, store=0, parts=[], frame=0;
+  const sunT=document.getElementById('sunT');
+  sunT.onclick=()=>{sun=!sun; sunT.classList.toggle('on',sun); sunT.textContent='☀️ 날씨: '+(sun?'맑음':'흐림');
+    if(!sun)sunT.textContent='☁️ 날씨: 흐림';};
+  document.getElementById('guide').onclick=guide;
+  function guide(){openModal([
+    {art:'🍠',title:'뿌리에 양분을 저장해요',body:'잎이 만든 <b>양분</b>은 줄기를 타고 내려와 뿌리에 <b>저장</b>되기도 해요. 고구마·당근·무가 그런 뿌리예요.'},
+    {art:'☀️',title:'직접 해 보기',body:'<b>맑은 날</b>에는 잎이 양분을 많이 만들어 뿌리로 내려보내요. <b>흐린 날</b>로 바꾸면 어떻게 되는지 비교해 보세요!'}
+  ],{color:col});}
+  function chk(){if(allTicked(body)){document.getElementById('hint').textContent='👍 모든 단계 확인! ‘다음’으로 넘어가요.'; done();}}
+  function drawCloud(x,y,s){ctx.fillStyle='#eef1f5'; ctx.strokeStyle='#d3dae3'; ctx.lineWidth=2;
+    [[0,0,20],[-16,5,14],[16,5,15],[-6,-9,12]].forEach(c=>{ctx.beginPath(); ctx.arc(x+c[0]*s,y+c[1]*s,c[2]*s,0,7); ctx.fill();});}
+  loop(()=>{ frame++;
+    if(sun && frame%16===0){parts.push({x:cx+(Math.random()-.5)*60,y:60,ph:'down'}); tick(body,'make'); chk();}
+    for(const p of parts){
+      p.x+=(cx-p.x)*0.05; p.y+=2.2;
+      if(p.y>=rootY){p.dead=1; store++; tick(body,'store'); if(store>=14)tick(body,'fat');
+        document.getElementById('st').textContent=store; chk();}
+    }
+    parts=parts.filter(p=>!p.dead);
+    // draw
+    ctx.clearRect(0,0,W,H);
+    const sky=ctx.createLinearGradient(0,0,0,soilY); sky.addColorStop(0,sun?'#eaf6ff':'#dfe4ea'); sky.addColorStop(1,'#f1f8ef');
+    ctx.fillStyle=sky; ctx.fillRect(0,0,W,soilY);
+    // 해 (항상 노란색) + 맑으면 광선, 흐리면 구름이 가림
+    ctx.fillStyle='#ffd24d'; ctx.beginPath(); ctx.arc(58,44,18,0,7); ctx.fill();
+    if(sun){ctx.strokeStyle='rgba(255,200,60,.7)'; ctx.lineWidth=3; for(let i=0;i<4;i++){ctx.beginPath(); ctx.moveTo(74,52); ctx.lineTo(cx-30,40+i*16); ctx.stroke();}}
+    else { drawCloud(64,46,1.2); ctx.font='bold 18px Noto Sans KR'; ctx.fillStyle='#7a818c'; ctx.fillText('흐린 날에는 양분을 잘 못 만들어요',150,40); }
+    ctx.fillStyle='#7a5230'; ctx.fillRect(0,soilY,W,H-soilY);
+    ctx.fillStyle='#6c4626'; for(let x=0;x<W;x+=24)ctx.fillRect(x,soilY+3,11,3);
+    // 잎 + 줄기
+    ctx.fillStyle='#62a73d'; ctx.fillRect(cx-8,40,16,soilY-40);
+    ctx.fillStyle='#4fae6d';
+    ctx.beginPath(); ctx.ellipse(cx-30,52,26,12,-0.5,0,7); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(cx+30,52,26,12,0.5,0,7); ctx.fill();
+    // 저장 뿌리(저장량 따라 굵어짐)
+    const rw=24+Math.min(store,40)/40*44, rh=46+Math.min(store,40)/40*36;
+    ctx.fillStyle='#d98f4e'; ctx.beginPath(); ctx.ellipse(cx,rootY,rw,rh,0,0,7); ctx.fill();
+    ctx.strokeStyle='#b9772f'; ctx.lineWidth=2; ctx.stroke();
+    // 잔뿌리
+    ctx.strokeStyle='#b9772f'; ctx.lineWidth=2.5; ctx.lineCap='round';
+    for(let i=-2;i<=2;i++){ctx.beginPath(); ctx.moveTo(cx+i*10,rootY+rh-6); ctx.quadraticCurveTo(cx+i*16,rootY+rh+18,cx+i*20,H-6); ctx.stroke();} ctx.lineCap='butt';
+    // 저장된 양분(점)
+    ctx.fillStyle='#e8b73c'; const dots=Math.min(store,30);
+    for(let i=0;i<dots;i++){const a=i*2.4, rr=(i/dots)*rw*0.7; ctx.beginPath(); ctx.arc(cx+Math.cos(a)*rr,rootY+Math.sin(a)*rh*0.7,3,0,7); ctx.fill();}
+    // 내려가는 양분
+    for(const p of parts){ctx.fillStyle='#e8b73c'; ctx.beginPath(); ctx.arc(p.x,p.y,4.5,0,7); ctx.fill();
+      ctx.strokeStyle='#b9892a'; ctx.lineWidth=1; ctx.stroke();}
+    ctx.font='bold 17px Noto Sans KR'; ctx.fillStyle='#c79320'; ctx.fillText('● 양분',14,H-16);
+  });
+  const k='guide-'+t.id+'-'+state.pi; if(!state.seen[k]){state.seen[k]=1; delay(guide,350);}
+}
+
+/* 뿌리의 생김새 — 굵은 뿌리 / 잔뿌리 / 뿌리털 */
+function rootShape(body,t,done){
+  const col=t.col.c;
+  const svg=`<svg viewBox="0 0 260 250" style="width:100%; height:100%; max-height:340px">
+    <rect x="0" y="30" width="260" height="14" fill="#7a5230" opacity="0.18"/>
+    <line x1="130" y1="6" x2="130" y2="36" stroke="#62a73d" stroke-width="7" stroke-linecap="round"/>
+    <ellipse cx="112" cy="14" rx="20" ry="9" fill="#4fae6d"/><ellipse cx="148" cy="14" rx="20" ry="9" fill="#4fae6d"/>
+    <polygon points="116,40 144,40 150,118 134,214 126,214 110,118" fill="#b07a3e" stroke="#8a5a2b" stroke-width="2"/>
+    <path d="M120 92 C96 100 80 124 66 152" stroke="#b07a3e" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <path d="M140 112 C168 122 188 142 206 168" stroke="#b07a3e" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <path d="M130 200 C128 214 126 222 124 236" stroke="#b07a3e" stroke-width="4" fill="none" stroke-linecap="round"/>
+    ${(()=>{ // 뿌리털: 뿌리 전체를 따라 자연스럽게 (끝으로 갈수록 촘촘)
+      let s=''; const segs=[
+        [[124,118],[116,150],[108,182],[103,212]],
+        [[118,96],[98,110],[80,130],[66,152]],
+        [[142,114],[168,126],[190,146],[206,168]],
+        [[129,198],[127,212],[125,224],[124,236]]
+      ];
+      segs.forEach(pts=>{ for(let i=0;i<pts.length-1;i++){ const [x1,y1]=pts[i],[x2,y2]=pts[i+1];
+        const dx=x2-x1,dy=y2-y1,len=Math.hypot(dx,dy)||1,nx=-dy/len,ny=dx/len;
+        for(let k=0;k<4;k++){ const f=k/4, x=x1+dx*f, y=y1+dy*f, side=(k%2?1:-1), L=5+ (i+1)*1.2 + Math.random()*2;
+          s+=`<line x1="${x.toFixed(1)}" y1="${y.toFixed(1)}" x2="${(x+nx*side*L).toFixed(1)}" y2="${(y+ny*side*L+2).toFixed(1)}" stroke="#caa06a" stroke-width="1.2"/>`;
+        }}});
+      return s; })()}
+    <circle class="slot" data-id="thick" cx="130" cy="70" r="14" fill="rgba(255,255,255,.9)" stroke="${col}" stroke-width="2" stroke-dasharray="4 3"/>
+    <text class="slotxt" data-id="thick" x="130" y="75" text-anchor="middle" font-family="Jua" font-size="12" fill="${t.col.d}">?</text>
+    <circle class="slot" data-id="lat" cx="192" cy="148" r="14" fill="rgba(255,255,255,.9)" stroke="${col}" stroke-width="2" stroke-dasharray="4 3"/>
+    <text class="slotxt" data-id="lat" x="192" y="153" text-anchor="middle" font-family="Jua" font-size="12" fill="${t.col.d}">?</text>
+    <line x1="58" y1="196" x2="94" y2="178" stroke="${col}" stroke-width="1.5" stroke-dasharray="3 3"/>
+    <circle class="slot" data-id="hair" cx="50" cy="200" r="14" fill="rgba(255,255,255,.9)" stroke="${col}" stroke-width="2" stroke-dasharray="4 3"/>
+    <text class="slotxt" data-id="hair" x="50" y="205" text-anchor="middle" font-family="Jua" font-size="12" fill="${t.col.d}">?</text>
+  </svg>`;
+  labelActivity(body,t,done,{intro:'🏷️ 이름표를 누른 뒤, 뿌리에서 알맞은 부분을 누르세요.', svg, color:col, parts:[
+    {id:'thick',label:'굵은 뿌리',desc:'가운데를 지나는 가장 굵은 뿌리예요. 식물을 단단히 지지해요.'},
+    {id:'lat',label:'잔뿌리',desc:'굵은 뿌리에서 갈라져 나온 가늘고 작은 뿌리예요.'},
+    {id:'hair',label:'뿌리털',desc:'뿌리 곳곳에 솜털처럼 난 아주 가는 털이에요. 물과 닿는 면을 넓혀 흡수를 도와요.'}
+  ], guide:[
+    {art:'🌱',title:'뿌리의 생김새',body:'뿌리는 가운데 <b>굵은 뿌리</b>와, 거기서 갈라진 <b>잔뿌리</b>, 그리고 뿌리 곳곳에 솜털처럼 난 <b>뿌리털</b>로 이루어져요.'},
+    {art:'🔎',title:'직접 찾아보기',body:'굵은 뿌리는 가운데, 잔뿌리는 갈라진 가는 뿌리, <b>뿌리털</b>은 뿌리에 촘촘히 난 가는 털이에요. 이름표를 붙여 확인해요!'}
+  ]});
+}
+
+/* ---- start ---- */
+renderHome();
+</script>
+</body>
+</html>
